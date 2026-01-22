@@ -4,6 +4,14 @@
 
 package frc.robot;
 
+// import com.revrobotics.PersistMode;
+// import com.revrobotics.ResetMode;
+// import com.revrobotics.spark.SparkMax;
+// import com.revrobotics.spark.SparkLowLevel.MotorType;
+// import com.revrobotics.spark.config.EncoderConfig;
+// import com.revrobotics.spark.config.SparkMaxConfig;
+
+// import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -47,7 +55,23 @@ public class Robot extends TimedRobot {
     if (isSimulation()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
-  }
+
+    // absoluteEncoder = new AnalogInput(absoluteEncoderId);
+    // SparkMax driveMotor = new SparkMax(1, MotorType.kBrushless);
+    // turnMotor = new SparkMax(turningId, MotorType.kBrushless);
+    // driveEncoder = driveMotor.getEncoder();
+
+    // SparkMaxConfig driveConfig = new SparkMaxConfig();
+    // driveConfig.smartCurrentLimit(40);
+    // driveConfig.inverted(false);
+
+    // SparkMaxConfig turnConfig = new SparkMaxConfig();
+    // turnConfig.smartCurrentLimit(20);
+    // turnConfig.inverted(false);
+
+    // driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    // driveMotor.set(0.1);
+      }
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics that you want ran
