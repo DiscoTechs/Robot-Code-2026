@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import com.revrobotics.sim.MovingAverageFilterSim;
+
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+
 // import com.revrobotics.PersistMode;
 // import com.revrobotics.ResetMode;
 // import com.revrobotics.spark.SparkMax;
@@ -87,6 +91,9 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    
+    // SwerveModulePosition[] positions = m_robotContainer.drivebase.getSwerveDrive().getModulePositions();
+    // System.out.println("Front Left: " + positions[0].distanceMeters + " | Front Right" + positions[1].distanceMeters + " | Back Left" + positions[2].distanceMeters + "Back Right" + positions[3].distanceMeters);
   }
 
   /**
