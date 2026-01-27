@@ -1,64 +1,43 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
-import com.revrobotics.sim.MovingAverageFilterSim;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import frc.robot.util.CommandsLogging;
 
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-
-// import com.revrobotics.PersistMode;
-// import com.revrobotics.ResetMode;
-// import com.revrobotics.spark.SparkMax;
-// import com.revrobotics.spark.SparkLowLevel.MotorType;
-// import com.revrobotics.spark.config.EncoderConfig;
-// import com.revrobotics.spark.config.SparkMaxConfig;
-
-// import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.wpilibj.Timer;
 
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
- * described in the TimedRobot documentation. If you change the name of this class or the package after creating this
- * project, you must also update the build.gradle file in the project.
- */
-public class Robot extends TimedRobot {
-  private static Robot instance;
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
+  private static Robot instance;
+  private SimulatedArena arena;
   private Timer disabledTimer;
 
   public Robot() {
-    instance = this;
-  }
+    // Setup Logging
+    Logger.recordMetadata("ProjectName", "SwerveCode");
+    Logger.addDataReceiver(new NT4Publisher());
+    Logger.start();
 
-  public static Robot getInstance() {
-    return instance;
-  }
+    CommandScheduler.getInstance().onCommandInitialize(CommandsLogging::commandStarted);
+    CommandScheduler.getInstance().onCommandFinish(CommandsLogging::commandEnded);
+    CommandScheduler.getInstance().onCommandInterrupt((inted, inting) -> {
+      inting.ifPresent(
+          (intr) -> CommandsLogging.runningInterrupters.put(intr, inted));
+      CommandsLogging.commandEnded(inted);
+    });
 
-  /**
-   * This function is run when the robot is first started up and should be used for any initialization code.
-   */
-  @Override
-  public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
+    // Init Robot
+    disabledTimer = new Timer(); // Create a timer to disable motor brake a few seconds after disable
     m_robotContainer = new RobotContainer();
-
-    // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
-    // immediately when disabled, but then also let it be pushed more 
-    disabledTimer = new Timer();
-
-    if (isSimulation()) {
-      DriverStation.silenceJoystickConnectionWarning(true);
-    }
+    instance = this;
 
     // absoluteEncoder = new AnalogInput(absoluteEncoderId);
     // SparkMax driveMotor = new SparkMax(1, MotorType.kBrushless);
@@ -73,39 +52,44 @@ public class Robot extends TimedRobot {
     // turnConfig.smartCurrentLimit(20);
     // turnConfig.inverted(false);
 
-    // driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    // driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters,
+    // PersistMode.kNoPersistParameters);
     // driveMotor.set(0.1);
-      }
-
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics that you want ran
-   * during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
-  @Override
-  public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
-    CommandScheduler.getInstance().run();
-    
-    // SwerveModulePosition[] positions = m_robotContainer.drivebase.getSwerveDrive().getModulePositions();
-    // System.out.println("Front Left: " + positions[0].distanceMeters + " | Front Right" + positions[1].distanceMeters + " | Back Left" + positions[2].distanceMeters + "Back Right" + positions[3].distanceMeters);
   }
 
-  /**
-   * This function is called once each time the robot enters Disabled mode.
-   */
+  public static Robot getInstance() {
+    return instance;
+  }
+
+  @Override
+  public void robotInit() {
+  }
+
+  @Override
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
+    CommandsLogging.logRunningCommands();
+    CommandsLogging.logRequiredSubsystems();
+
+    if (Robot.isSimulation()) {
+      Pose3d[] fuelPoses = arena.getGamePiecesArrayByType("Fuel");
+      Logger.recordOutput("FieldSimulation/FuelPoses", fuelPoses);
+    }
+
+    Logger.recordOutput("FieldSimulation/RobotPose", m_robotContainer.getRobotPose());
+    Logger.recordOutput("FieldSimulation/TargetPose",
+        m_robotContainer.getSwerveDrive().field.getObject("targetPose").getPose());
+    // Logger.recordOutput("FieldSimulation/AimDirection", m_robotContainer.getAimDirection());
+    // Logger.recordOutput("FieldSimulation/AimTarget", new Pose3d(m_robotContainer.getAimPoint(), Rotation3d.kZero));
+  }
+
   @Override
   public void disabledInit() {
     m_robotContainer.setMotorBrake(true);
     disabledTimer.reset();
     disabledTimer.start();
   }
-  
+
   @Override
   public void disabledPeriodic() {
     if (disabledTimer.hasElapsed(Constants.DrivebaseConstants.WHEEL_LOCK_TIME)) {
@@ -115,35 +99,24 @@ public class Robot extends TimedRobot {
     }
   }
 
-  /**
-   * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
-   */
   @Override
   public void autonomousInit() {
     m_robotContainer.setMotorBrake(true);
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    //Print the selected autonomous command upon autonomous init
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     System.out.println("Auto selected: " + m_autonomousCommand);
 
-    // schedule the autonomous command selected in the autoChooser
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
   }
 
-  /**
-   * This function is called periodically during autonomous.
-   */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     } else {
@@ -151,33 +124,30 @@ public class Robot extends TimedRobot {
     }
   }
 
-  /**
-   * This function is called periodically during operator control.
-   */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
   public void testInit() {
-    // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
 
-  /**
-   * This function is called periodically during test mode.
-   */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
-  /**
-   * This function is called once when the robot is first started up.
-   */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+    SimulatedArena.getInstance().shutDown();
+    SimulatedArena.overrideInstance(new Arena2026Rebuilt());
 
-  /**
-   * This function is called periodically whilst in simulation.
-   */
+    arena = SimulatedArena.getInstance();
+    arena.addDriveTrainSimulation(m_robotContainer.getSwerveDrive().getMapleSimDrive().get());
+  }
+
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    arena.simulationPeriodic();
+  }
 }
