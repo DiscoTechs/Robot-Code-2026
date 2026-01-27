@@ -77,10 +77,7 @@ public class Robot extends LoggedRobot {
     }
 
     Logger.recordOutput("FieldSimulation/RobotPose", m_robotContainer.getRobotPose());
-    Logger.recordOutput("FieldSimulation/TargetPose",
-        m_robotContainer.getSwerveDrive().field.getObject("targetPose").getPose());
-    // Logger.recordOutput("FieldSimulation/AimDirection", m_robotContainer.getAimDirection());
-    // Logger.recordOutput("FieldSimulation/AimTarget", new Pose3d(m_robotContainer.getAimPoint(), Rotation3d.kZero));
+    Logger.recordOutput("FieldSimulation/TargetPose", m_robotContainer.getSwerveDrive().field.getObject("targetPose").getPose());
   }
 
   @Override
@@ -104,8 +101,6 @@ public class Robot extends LoggedRobot {
     m_robotContainer.setMotorBrake(true);
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    System.out.println("Auto selected: " + m_autonomousCommand);
-
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
