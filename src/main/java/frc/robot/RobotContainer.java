@@ -5,7 +5,9 @@
 package frc.robot;
 
 import java.io.File;
-import java.util.Arrays;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,10 +16,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +30,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.commands.swervedrive.drivebase.RotateCommand;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
 
 /**
@@ -40,14 +42,12 @@ import swervelib.SwerveInputStream;
  * trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  final CommandXboxController driverXbox = new CommandXboxController(0);
   public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+  final CommandXboxController driverXbox = new CommandXboxController(0);
 
-  /**
-   * Converts driver input into a field-relative ChassisSpeeds that is controlled
-   * by angular velocity.
-   */
+  private final SendableChooser<Command> autoChooser;
+  private Alliance currentAlliance = Alliance.Red;
+
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
       () -> driverXbox.getLeftY() * -1,
       () -> driverXbox.getLeftX() * -1)
@@ -56,18 +56,10 @@ public class RobotContainer {
       .scaleTranslation(0.8)
       .allianceRelativeControl(true);
 
-  /**
-   * Clone's the angular velocity input stream and converts it to a fieldRelative
-   * input stream.
-   */
   SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
       .withControllerHeadingAxis(driverXbox::getRightX, driverXbox::getRightY)
       .headingWhile(true);
 
-  /**
-   * Clone's the angular velocity input stream and converts it to a robotRelative
-   * input stream.
-   */
   SwerveInputStream driveRobotOriented = driveAngularVelocity.copy()
       .robotRelative(true)
       .allianceRelativeControl(false);
@@ -80,7 +72,6 @@ public class RobotContainer {
       .scaleTranslation(0.8)
       .allianceRelativeControl(true);
 
-  // Derive the heading axis with math!
   SwerveInputStream driveDirectAngleKeyboard = driveAngularVelocityKeyboard.copy()
       .withControllerHeadingAxis(
           () -> Math.sin(driverXbox.getRawAxis(2) * Math.PI) * (Math.PI * 2),
@@ -95,25 +86,21 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    DriverStation.silenceJoystickConnectionWarning(true);
+    configureAutoCommands();
 
-    // Init commands
-    Command driveAdvCmd = new AbsoluteDriveAdv(drivebase, null, null, null, null, null, null, null);
+    // If sim then don't care about joystick
+    if (!Robot.isReal() || true) {
+      DriverStation.silenceJoystickConnectionWarning(true);
+    }
 
-    // Init SmartDashboard
-    autoChooser.setDefaultOption("Do Nothing",
-        Commands.runOnce(drivebase::zeroGyroWithAlliance).andThen(Commands.none()));
-    autoChooser.addOption("Drive Forward", Commands.runOnce(drivebase::zeroGyroWithAlliance).withTimeout(.2)
-        .andThen(drivebase.driveForward().withTimeout(1)));
-    autoChooser.addOption("Absolute Drive",
-        Commands.runOnce(drivebase::zeroGyroWithAlliance).withTimeout(.2).andThen(driveAdvCmd));
+    // Commands.runOnce(drivebase::zeroGyroWithAlliance).withTimeout(.2).andThen()
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser.setDefaultOption("Do Nothing", Commands.none());
+    autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(10));
+    autoChooser.addOption("Absolute Drive", new AbsoluteDriveAdv(drivebase, null, null, null, null, null, null, null));
     autoChooser.addOption("Rotate 45", new RotateCommand(drivebase));
-
     SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    Shuffleboard.getTab("Autonomous")
-        .add("Auto Chooser", autoChooser)
-        .withWidget(BuiltInWidgets.kComboBoxChooser);
 
     if (autoChooser.getSelected() == null) {
       RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
@@ -179,15 +166,21 @@ public class RobotContainer {
 
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
+  private void configureAutoCommands() {
+    NamedCommands.registerCommand("driveBackwards", drivebase.driveBackwards().withTimeout(1).withName("Auto.driveBackwards"));
+    NamedCommands.registerCommand("driveForwards", drivebase.driveForward().withTimeout(2).withName("Auto.driveForwards"));
+  }
+
   public Command getAutonomousCommand() {
-    // Pass in the selected auto from the SmartDashboard as our desired autnomous
-    // commmand
     return autoChooser.getSelected();
+  }
+
+  public SwerveDrive getSwerveDrive() {
+    return drivebase.getSwerveDrive();
+  }
+
+  public Pose2d getRobotPose() {
+    return drivebase.getPose();
   }
 
   public void setMotorBrake(boolean brake) {
