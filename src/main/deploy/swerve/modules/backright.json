@@ -11,7 +11,7 @@
   },
   "inverted": {
     "drive": false,
-    "angle": false
+    "angle": true
   },
   "angle": {
     "type": "sparkmax_neo",
