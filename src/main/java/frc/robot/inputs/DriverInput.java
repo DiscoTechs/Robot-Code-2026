@@ -2,10 +2,10 @@ package frc.robot.inputs;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj.DriverStation;
+
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.SwerveSubsystem;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import swervelib.SwerveInputStream;
 
 public class DriverInput {
@@ -18,42 +18,22 @@ public class DriverInput {
     }
 
     public void init() {
-        SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                () -> controller.getLeftY() * -1,
-                () -> controller.getLeftX() * -1)
+        SwerveInputStream driveAngularVelocity = SwerveInputStream
+                .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * -1, () -> controller.getLeftX() * -1)
                 .withControllerRotationAxis(controller::getRightX)
                 .deadband(OperatorConstants.DEADBAND)
-                .scaleTranslation(0.8)
+                .scaleTranslation(OperatorConstants.SCALE_TRANSLATION)
                 .allianceRelativeControl(true);
-
         drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity));
 
-        // SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream.of(drivebase.getSwerveDrive(),
-        //         () -> -controller.getLeftY(),
-        //         () -> -controller.getLeftX())
-        //         .withControllerRotationAxis(() -> controller.getRawAxis(2))
-        //         .deadband(OperatorConstants.DEADBAND)
-        //         .scaleTranslation(0.8)
-        //         .allianceRelativeControl(true);
-
-        // SwerveInputStream driveDirectAngleKeyboard = driveAngularVelocityKeyboard.copy()
-        //         .withControllerHeadingAxis(
-        //                 () -> Math.sin(controller.getRawAxis(2) * Math.PI) * (Math.PI * 2),
-        //                 () -> Math.cos(controller.getRawAxis(2) * Math.PI) * (Math.PI * 2))
-        //         .headingWhile(true)
-        //         .translationHeadingOffset(true)
-        //         .translationHeadingOffset(Rotation2d.fromDegrees(0));
-
         if (DriverStation.isTest()) {
-            // drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity)); // Overrides drive command above!
-
             controller.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
             controller.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
             controller.back().whileTrue(drivebase.centerModulesCommand());
             controller.leftBumper().onTrue(Commands.none());
             controller.rightBumper().onTrue(Commands.none());
-        } else if (RobotBase.isSimulation()) {
-            // drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveDirectAngleKeyboard));
+        // } else if (RobotBase.isSimulation()) {
+        //     drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveDirectAngleKeyboard));
 
         //     Pose2d target = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(90));
         //     // drivebase.getSwerveDrive().field.getObject("targetPose").setPose(target);
@@ -62,14 +42,15 @@ public class DriverInput {
         //             new ProfiledPIDController(5, 0, 0,
         //                     new Constraints(Units.degreesToRadians(360), Units.degreesToRadians(180))));
 
-            // controller.start()
-            //         .onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-            // controller.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
-            // controller.button(2).whileTrue(Commands.runEnd(() -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
-            //         () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
+        //     controller.start()
+        //             .onTrue(Commands.runOnce(() -> {
+        //                 System.out.println("Zeroing gyro with alliance");
+        //                 drivebase.zeroGyroWithAlliance();
+        //             }));
+        //     controller.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
+        //     controller.button(2).whileTrue(Commands.runEnd(() -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
+        //             () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
         } else {
-            // drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-
             controller.start().onTrue(Commands.runOnce(drivebase::zeroGyro));
             controller.back().whileTrue(Commands.none());
 
