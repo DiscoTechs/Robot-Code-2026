@@ -26,20 +26,17 @@ public class RotateCommand extends Command {
   @Override
   public void initialize() {
     Rotation2d currentHeading = swerve.getHeading();
-    targetHeading = currentHeading.plus(Rotation2d.fromDegrees(45));
+    targetHeading = currentHeading.plus(Rotation2d.fromDegrees(90));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("Executing rotate (Current: " + swerve.getHeading().getDegrees() + "*" + " Target: " + targetHeading.getDegrees() + "*)");
-
     Translation2d translation = new Translation2d(0, 0);
     double headingX = targetHeading.getSin();
     double headingY = targetHeading.getCos();
   
     ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(0.0, 0.0, headingX, headingY);
-    // swerve.drive(translation, (Constants.OperatorConstants.TURN_CONSTANT * -targetHeading.getAsDouble()), true);
     swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true);
   }
   
