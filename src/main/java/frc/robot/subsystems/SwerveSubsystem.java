@@ -10,7 +10,6 @@ import static edu.wpi.first.units.Units.Meter;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -48,17 +47,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import limelight.Limelight;
-import limelight.networktables.LimelightSettings.ImuMode;
-import limelight.networktables.LimelightSettings.LEDMode;
 import limelight.networktables.AngularVelocity3d;
 import limelight.networktables.LimelightPoseEstimator;
+import limelight.networktables.LimelightPoseEstimator.EstimationMode;
+import limelight.networktables.LimelightSettings.ImuMode;
+import limelight.networktables.LimelightSettings.LEDMode;
 import limelight.networktables.Orientation3d;
 import limelight.networktables.PoseEstimate;
-import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
-import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -71,6 +69,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private LimelightPoseEstimator poseEstimator;
   private double distanceToHub = 0.0;
+  private Pose3d redHub = new Pose3d(
+      Meter.of(11.902),
+      Meter.of(4.031),
+      Meter.of(0.0),
+      new Rotation3d(0, 0, 0));
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -118,51 +121,35 @@ public class SwerveSubsystem extends SubsystemBase {
     setupPathPlanner();
 
     if (Constants.Limelight.enabled) {
-      setupLimelight();
-    }
-  }
-
-  public void setupLimelight() {
-    SwerveIMU gyro = swerveDrive.getGyro();
-    limelight = new Limelight("limelight");
+      limelight = new Limelight("limelight");
       limelight.getSettings()
-        .withLimelightLEDMode(LEDMode.PipelineControl)
-        .withCameraOffset(Constants.Limelight.offset)
-        .withImuMode(ImuMode.InternalImuMT1Assist)
-        .withImuAssistAlpha(0.01)
-        .withRobotOrientation(new Orientation3d(
-          gyro.getRotation3d(),
-          new AngularVelocity3d(
-            DegreesPerSecond.of(0),
-            DegreesPerSecond.of(0),
-            DegreesPerSecond.of(0)
-          )))
-        .save();
-    
-    poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
+          .withLimelightLEDMode(LEDMode.PipelineControl)
+          .withCameraOffset(Constants.Limelight.offset)
+          .withImuMode(ImuMode.InternalImuMT1Assist)
+          .withImuAssistAlpha(0.01)
+          .withRobotOrientation(new Orientation3d(
+              swerveDrive.getGyro().getRotation3d(),
+              new AngularVelocity3d(
+                  DegreesPerSecond.of(0),
+                  DegreesPerSecond.of(0),
+                  DegreesPerSecond.of(0))))
+          .save();
+
+      poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
+    }
   }
 
   @Override
   public void periodic() {
-    // When vision is enabled we must manually update odometry in SwerveDrive
     if (Constants.Limelight.enabled) {
       // swerveDrive.updateOdometry();
 
-      Optional<PoseEstimate> estimate = poseEstimator.getPoseEstimate();
-
-      estimate.ifPresent((PoseEstimate poseEstimate) -> {
+      poseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
         if (poseEstimate.tagCount > 0) {
+          distanceToHub = poseEstimate.pose.toPose2d().minus(redHub.toPose2d()).getTranslation().getNorm();
+
           Logger.recordOutput("Limelight/tagCount", poseEstimate.tagCount);
           Logger.recordOutput("FieldSimulation/LLPose", poseEstimate.pose);
-
-          Pose3d redHub = new Pose3d(
-            Meter.of(11.902),
-            Meter.of(4.031),
-            Meter.of(0.0),
-            new Rotation3d(0, 0, 0)
-          );
-
-          distanceToHub = poseEstimate.pose.toPose2d().minus(redHub.toPose2d()).getTranslation().getNorm();
           Logger.recordOutput("FieldSimulation/hubDistance", distanceToHub);
           swerveDrive.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds);
         }
@@ -242,25 +229,29 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   // /**
-  //  * Aim the robot at the target returned by PhotonVision.
-  //  *
-  //  * @return A {@link Command} which will run the alignment.
-  //  */
+  // * Aim the robot at the target returned by PhotonVision.
+  // *
+  // * @return A {@link Command} which will run the alignment.
+  // */
   // public Command aimAtTarget(Cameras camera) {
 
-  //   return run(() -> {
-  //     Optional<PhotonPipelineResult> resultO = camera.getBestResult();
-  //     if (resultO.isPresent()) {
-  //       var result = resultO.get();
-  //       if (result.hasTargets()) {
-  //         drive(getTargetSpeeds(0,
-  //             0,
-  //             Rotation2d.fromDegrees(result.getBestTarget()
-  //                 .getYaw()))); // Not sure if this will work, more math may be required.
-  //       }
-  //     }
-  //   });
+  // return run(() -> {
+  // Optional<PhotonPipelineResult> resultO = camera.getBestResult();
+  // if (resultO.isPresent()) {
+  // var result = resultO.get();
+  // if (result.hasTargets()) {
+  // drive(getTargetSpeeds(0,
+  // 0,
+  // Rotation2d.fromDegrees(result.getBestTarget()
+  // .getYaw()))); // Not sure if this will work, more math may be required.
   // }
+  // }
+  // });
+  // }
+
+  public Limelight getLimelight() {
+    return limelight;
+  }
 
   /**
    * Get the path follower with events.
