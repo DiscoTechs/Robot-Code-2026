@@ -23,7 +23,8 @@ public class DriverInput {
                 .withControllerRotationAxis(controller::getRightX)
                 .deadband(OperatorConstants.DEADBAND)
                 .scaleTranslation(OperatorConstants.SCALE_TRANSLATION)
-                .allianceRelativeControl(true);
+                // .robotRelative(false)
+                .allianceRelativeControl(false);
         drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity));
 
         if (DriverStation.isTest()) {
