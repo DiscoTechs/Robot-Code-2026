@@ -1,10 +1,10 @@
 package frc.robot.inputs;
 
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj.DriverStation;
-
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.DriveToTarget;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveInputStream;
 
@@ -56,7 +56,7 @@ public class DriverInput {
             controller.back().whileTrue(Commands.none());
 
             controller.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-            controller.rightBumper().onTrue(Commands.none());
+            controller.rightBumper().whileTrue(new DriveToTarget(drivebase));
         }
     }
 }
