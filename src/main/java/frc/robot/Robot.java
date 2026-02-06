@@ -3,13 +3,13 @@ package frc.robot;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-import frc.robot.util.CommandsLogging;
 
-import swervelib.simulation.ironmaple.simulation.SimulatedArena;
 import swervelib.simulation.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.geometry.Pose3d;
+import frc.robot.util.CommandsLogging;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends LoggedRobot {
@@ -38,23 +38,6 @@ public class Robot extends LoggedRobot {
     disabledTimer = new Timer(); // Create a timer to disable motor brake a few seconds after disable
     m_robotContainer = new RobotContainer();
     instance = this;
-
-    // absoluteEncoder = new AnalogInput(absoluteEncoderId);
-    // SparkMax driveMotor = new SparkMax(1, MotorType.kBrushless);
-    // turnMotor = new SparkMax(turningId, MotorType.kBrushless);
-    // driveEncoder = driveMotor.getEncoder();
-
-    // SparkMaxConfig driveConfig = new SparkMaxConfig();
-    // driveConfig.smartCurrentLimit(40);
-    // driveConfig.inverted(false);
-
-    // SparkMaxConfig turnConfig = new SparkMaxConfig();
-    // turnConfig.smartCurrentLimit(20);
-    // turnConfig.inverted(false);
-
-    // driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters,
-    // PersistMode.kNoPersistParameters);
-    // driveMotor.set(0.1);
   }
 
   public static Robot getInstance() {
