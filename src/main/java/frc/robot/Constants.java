@@ -33,7 +33,7 @@ public final class Constants {
     public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms spark max velocity lag
 
     public static class Limelight {
-        public static final Boolean enabled = false;
+        public static final Boolean enabled = true;
         public static final Pose3d offset = new Pose3d(
                 Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),
@@ -43,8 +43,8 @@ public final class Constants {
 
     public static class OperatorConstants {
         public static final double SCALE_TRANSLATION = 0.8;
-        public static final int kDriverControllerPort = 0;
         public static final double DEADBAND = 0.1; // Joystick Deadband
+        public static final int PORT = 0;
     }
 
     public static class IndexerConstants {
