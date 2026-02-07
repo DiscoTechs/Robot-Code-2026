@@ -38,6 +38,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 //   private Alliance currentAlliance = Alliance.Red;
 
+   Command cmd;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -53,12 +54,14 @@ public class RobotContainer {
     NamedCommands.registerCommand("driveBackwards", drivebase.driveBackwards().withTimeout(1).withName("Auto.driveBackwards"));
     NamedCommands.registerCommand("driveForwards", drivebase.driveForward().withTimeout(2).withName("Auto.driveForwards"));
 
-    // Setup Auto
+    // Setup Auto Menu
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Do Nothing", Commands.none());
     autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(10)); // Commands.runOnce(drivebase::zeroGyroWithAlliance).withTimeout(.2).andThen()
     autoChooser.addOption("Rotate 45", new RotateCommand(drivebase));
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    cmd = new RotateCommand(drivebase);
 
     if (autoChooser.getSelected() == null) {
       RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
@@ -66,7 +69,10 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    // Testing that we can just return an auto command and the robot will execute in auto mode.
+    return cmd;
+    //return autoChooser.getSelected();
+
   }
 
   public SwerveDrive getSwerveDrive() {
