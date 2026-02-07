@@ -50,4 +50,14 @@ public final class Constants {
     public static class IndexerConstants {
         public static final int kIndexMotorId = 0;
     }
+
+    public static class ClimberConstants {
+        public static final int kClimberDriveId = 0;
+    }
+
+    public static class ShooterConstants {
+        public static final int kShooterDriveId = 0;
+        public static final int kShooterAngleId = 0;
+        
+    }
 }
