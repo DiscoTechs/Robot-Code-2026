@@ -41,7 +41,7 @@ public class DriveToTarget extends Command {
                     rotation = 0;
                 }
 
-                drivetrain.getSwerveDrive().drive(new Translation2d(0.75, 0), rotation, false, false);
+                drivetrain.getSwerveDrive().drive(new Translation2d(0.5, 0), rotation, false, false);
                 Logger.recordOutput("Limelight/targetDistance", lastDistance);
                 Logger.recordOutput("Limelight/targetX", tag.txnc);
             } else {
