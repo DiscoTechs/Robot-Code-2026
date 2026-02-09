@@ -11,7 +11,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,11 +31,11 @@ import swervelib.SwerveDrive;
  * trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  public final DriverInput driverInput = new DriverInput(Constants.OperatorConstants.PORT, drivebase);
+  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private final DriverInput driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
 
   private final SendableChooser<Command> autoChooser;
-//   private Alliance currentAlliance = Alliance.Red;
+  // private Alliance currentAlliance = Alliance.Red;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -47,7 +46,7 @@ public class RobotContainer {
     }
 
     // Setup Inputs
-    driverInput.init(); // Configure our controller + send input to swervedrive
+    driverInput.init(); // Configure our controller to send input to swervedrive
 
     // Register Commands
     NamedCommands.registerCommand("driveBackwards", drivebase.driveBackwards().withTimeout(1).withName("Auto.driveBackwards"));
@@ -56,7 +55,7 @@ public class RobotContainer {
     // Setup Auto
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Do Nothing", Commands.none());
-    autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(10)); // Commands.runOnce(drivebase::zeroGyroWithAlliance).withTimeout(.2).andThen()
+    autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(10));
     autoChooser.addOption("Rotate 45", new RotateCommand(drivebase));
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
