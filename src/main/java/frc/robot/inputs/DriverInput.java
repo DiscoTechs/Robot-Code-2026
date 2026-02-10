@@ -21,7 +21,7 @@ public class DriverInput {
     public void init() {
         SwerveInputStream driveAngularVelocity = SwerveInputStream
                 .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * -1, () -> controller.getLeftX() * -1)
-                .withControllerRotationAxis(controller::getRightX)
+                .withControllerRotationAxis(() -> -controller.getRightX())
                 .deadband(OperatorConstants.JOYSTICK_DEADBAND)
                 .scaleTranslation(OperatorConstants.TRANSLATION_SCALE)
                 .robotRelative(false)
