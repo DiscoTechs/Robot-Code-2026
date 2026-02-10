@@ -23,8 +23,8 @@ public class DriverInput {
                 .withControllerRotationAxis(controller::getRightX)
                 .deadband(OperatorConstants.DEADBAND)
                 .scaleTranslation(OperatorConstants.SCALE_TRANSLATION)
-                .robotRelative(true)
-                .allianceRelativeControl(false);
+                .robotRelative(false)
+                .allianceRelativeControl(true);
         drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity));
 
         if (DriverStation.isTest()) {
@@ -55,7 +55,18 @@ public class DriverInput {
             controller.start().onTrue(Commands.runOnce(drivebase::zeroGyro));
             controller.back().whileTrue(Commands.none());
 
-            controller.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+            controller.leftBumper().toggleOnTrue(Commands.runOnce(() -> 
+                drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity
+                    .allianceRelativeControl(false)
+                    .robotRelative(true)
+            ))));
+            controller.leftBumper().toggleOnFalse(Commands.runOnce(() -> 
+                drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity
+                    .allianceRelativeControl(true)
+                    .robotRelative(false)
+            ))));
+
+            // controller.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
             controller.rightBumper().whileTrue(new DriveToTarget(drivebase));
         }
     }
