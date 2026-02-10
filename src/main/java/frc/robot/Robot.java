@@ -1,8 +1,8 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 import swervelib.simulation.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt;
 import swervelib.simulation.ironmaple.simulation.SimulatedArena;
@@ -72,7 +72,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
-    if (disabledTimer.hasElapsed(Constants.WHEEL_LOCK_TIME)) {
+    if (disabledTimer.hasElapsed(Constants.WHEEL_LOCK_TIME_SEC)) {
       m_robotContainer.setMotorBrake(false);
       disabledTimer.stop();
       disabledTimer.reset();
@@ -85,7 +85,7 @@ public class Robot extends LoggedRobot {
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+      CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
   }
 

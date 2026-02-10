@@ -7,13 +7,15 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Radians;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import swervelib.math.Matter;
 
 /**
@@ -26,15 +28,15 @@ import swervelib.math.Matter;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final double ROBOT_MASS = Units.lbsToKilograms(50);
-    public static final Matter CHASSIS = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
-    public static final double MAX_SPEED = Units.feetToMeters(14.5); // Robot maximum speed (m/s). Used to limit acceleration.
-    public static final double WHEEL_LOCK_TIME = 10; // Hold time on motor brakes when disabled (seconds)
-    public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms spark max velocity lag
+    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(50);
+    public static final Matter CHASSIS_MATTER = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS_KG);
+    public static final double MAX_LINEAR_SPEED_MPS = Units.feetToMeters(14.5); // Robot maximum speed (m/s). Used to limit acceleration.
+    public static final double WHEEL_LOCK_TIME_SEC = 10; // Hold time on motor brakes when disabled (seconds)
+    public static final double CONTROL_LOOP_PERIOD_SEC = 0.13; // s, 20ms + 110ms spark max velocity lag
 
     public static class Limelight {
-        public static final Boolean enabled = true;
-        public static final Pose3d offset = new Pose3d(
+        public static final boolean ENABLED = false;
+        public static final Pose3d ROBOT_TO_CAMERA_POSE = new Pose3d(
                 Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),
@@ -42,12 +44,23 @@ public final class Constants {
     }
 
     public static class OperatorConstants {
-        public static final double SCALE_TRANSLATION = 0.8;
-        public static final double DEADBAND = 0.1; // Joystick Deadband
-        public static final int PORT = 0;
+        public static final int OPERATOR_CONTROLLER_PORT = 0;
+        public static final int DRIVER_CONTROLLER_PORT = 0;
+        public static final double TRANSLATION_SCALE = 0.8;
+        public static final double JOYSTICK_DEADBAND = 0.1; // Joystick Deadband
     }
 
     public static class IndexerConstants {
-        public static final int kIndexMotorId = 0;
+        public static final int INDEXER_MOTOR_CAN_ID = 10;
+    }
+
+    public static class ClimberConstants {
+        public static final Distance STARTING_HEIGHT = Meters.of(0.5);
+        public static final Mass MASS = Pounds.of(16);
+        public static final int CLIMBER_MOTOR_CAN_ID = 20;
+        public static final Distance[] HEIGHT_LIMITS = {
+            Meters.of(0),
+            Meters.of(.762)
+        };
     }
 }

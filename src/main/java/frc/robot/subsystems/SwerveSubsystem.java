@@ -42,6 +42,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -94,7 +95,7 @@ public class SwerveSubsystem extends SubsystemBase {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
 
     try {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED, startingPose);
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_LINEAR_SPEED_MPS, startingPose);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -120,11 +121,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
     setupPathPlanner();
 
-    if (Constants.Limelight.enabled) {
+    if (Constants.Limelight.ENABLED) {
       limelight = new Limelight("limelight");
       limelight.getSettings()
           .withLimelightLEDMode(LEDMode.PipelineControl)
-          .withCameraOffset(Constants.Limelight.offset)
+        .withCameraOffset(Constants.Limelight.ROBOT_TO_CAMERA_POSE)
           .withImuMode(ImuMode.InternalImuMT1Assist)
           .withImuAssistAlpha(0.01)
           .withRobotOrientation(new Orientation3d(
@@ -141,7 +142,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (Constants.Limelight.enabled) {
+    if (Constants.Limelight.ENABLED) {
       // swerveDrive.updateOdometry();
 
       poseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
@@ -225,7 +226,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // Preload PathPlanner Path finding
     // IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
-    PathfindingCommand.warmupCommand().schedule();
+    CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
   }
 
   // /**
@@ -644,7 +645,7 @@ public class SwerveSubsystem extends SubsystemBase {
         headingX,
         headingY,
         getHeading().getRadians(),
-        Constants.MAX_SPEED);
+      Constants.MAX_LINEAR_SPEED_MPS);
   }
 
   /**
@@ -664,7 +665,7 @@ public class SwerveSubsystem extends SubsystemBase {
         scaledInputs.getY(),
         angle.getRadians(),
         getHeading().getRadians(),
-        Constants.MAX_SPEED);
+      Constants.MAX_LINEAR_SPEED_MPS);
   }
 
   /**
