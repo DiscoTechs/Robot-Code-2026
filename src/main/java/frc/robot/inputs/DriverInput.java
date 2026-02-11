@@ -13,19 +13,24 @@ public class DriverInput {
     public static CommandXboxController controller;
     private SwerveSubsystem drivebase;
 
+    SwerveInputStream driveAngularVelocity = SwerveInputStream
+        .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * -1, () -> controller.getLeftX() * -1)
+        .withControllerRotationAxis(() -> -controller.getRightX())
+        .deadband(OperatorConstants.JOYSTICK_DEADBAND)
+        .scaleTranslation(OperatorConstants.TRANSLATION_SCALE)
+        .robotRelative(false)
+        .allianceRelativeControl(true);
+    
+    SwerveInputStream driveAngularVelocityRobotRelative = driveAngularVelocity
+        .robotRelative(true)
+        .allianceRelativeControl(false);
+
     public DriverInput(int ctlrPort, SwerveSubsystem ss) {
         controller = new CommandXboxController(ctlrPort);
         drivebase = ss;
     }
 
     public void init() {
-        SwerveInputStream driveAngularVelocity = SwerveInputStream
-                .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * -1, () -> controller.getLeftX() * -1)
-                .withControllerRotationAxis(() -> -controller.getRightX())
-                .deadband(OperatorConstants.JOYSTICK_DEADBAND)
-                .scaleTranslation(OperatorConstants.TRANSLATION_SCALE)
-                .robotRelative(false)
-                .allianceRelativeControl(true);
         drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity));
 
         if (DriverStation.isTest()) {
@@ -52,16 +57,8 @@ public class DriverInput {
             controller.start().onTrue(Commands.runOnce(drivebase::zeroGyro));
             controller.back().whileTrue(Commands.none());
 
-            controller.leftBumper().toggleOnTrue(Commands.runOnce(() -> 
-                drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity
-                    .allianceRelativeControl(false)
-                    .robotRelative(true)
-            ))));
-            controller.leftBumper().toggleOnFalse(Commands.runOnce(() -> 
-                drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity
-                    .allianceRelativeControl(true)
-                    .robotRelative(false)
-            ))));
+            controller.leftBumper().toggleOnTrue(Commands.runOnce(() -> drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocityRobotRelative))));
+            controller.leftBumper().toggleOnFalse(Commands.runOnce(() -> drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity))));
 
             // controller.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
             controller.rightBumper().whileTrue(new DriveToTarget(drivebase));
