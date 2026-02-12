@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -28,60 +29,62 @@ import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
+import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ClimberSubsystem extends SubsystemBase {
-    private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
-            .withControlMode(ControlMode.CLOSED_LOOP)
-            // Mechanism Circumference is the distance traveled by each mechanism rotation
-            // converting rotations to meters.
-            .withMechanismCircumference(Meters.of(Inches.of(0.25).in(Meters) * 22))
-            // Feedback Constants (PID Constants)
-            .withClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
-            .withSimClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
-            // Feedforward Constants
-            .withFeedforward(new ElevatorFeedforward(0, 0, 0))
-            .withSimFeedforward(new ElevatorFeedforward(0, 0, 0))
-            // Telemetry name and verbosity level
-            // Gearing from the motor rotor to final shaft.
-            // In this example GearBox.fromReductionStages(3,4) is the same as
-            // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
-            // your motor.
-            // You could also use .withGearing(12) which does the same thing.
-            .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
-            // Motor properties to prevent over currenting.
-            .withMotorInverted(false)
-            .withIdleMode(MotorMode.BRAKE)
-            .withStatorCurrentLimit(Amps.of(40))
-            .withOpenLoopRampRate(Seconds.of(0.25))
-            .withClosedLoopRampRate(Seconds.of(0.25))
-            .withTelemetry("ElevatorMotor", TelemetryVerbosity.HIGH);
+  private TalonFX motor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID);
+  private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
+      .withControlMode(ControlMode.CLOSED_LOOP)
+      .withMechanismCircumference(Meters.of(Inches.of(0.25).in(Meters) * 22))
+      .withClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
+      .withSimClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
+      .withFeedforward(new ElevatorFeedforward(0, 0, 0))
+      .withSimFeedforward(new ElevatorFeedforward(0, 0, 0))
+      .withGearing(new MechanismGearing(GearBox.fromReductionStages(100)))
+      .withMotorInverted(true)
+      .withIdleMode(MotorMode.BRAKE)
+      .withStatorCurrentLimit(Amps.of(40))
+      .withOpenLoopRampRate(Seconds.of(0.25))
+      .withClosedLoopRampRate(Seconds.of(0.25))
+      .withTelemetry("ElevatorMotor", TelemetryVerbosity.HIGH);
 
-    private SparkMax sparkMax = new SparkMax(ClimberConstants.CLIMBER_MOTOR_CAN_ID, MotorType.kBrushless);
-    private SmartMotorController smctl = new SparkWrapper(sparkMax, DCMotor.getNEO(1), smcConfig);
-
-    private Elevator elevator = new Elevator(
-            new ElevatorConfig(smctl)
-            .withMass(ClimberConstants.MASS)
-            .withStartingHeight(ClimberConstants.STARTING_HEIGHT)
-            .withHardLimits(ClimberConstants.HEIGHT_LIMITS[0], ClimberConstants.HEIGHT_LIMITS[1])
-                    .withTelemetry("Elevator", TelemetryVerbosity.HIGH));
+  private SmartMotorController smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), smcConfig);
+  private Elevator elevator = new Elevator(
+      new ElevatorConfig(smctl)
+          .withMass(ClimberConstants.MASS)
+          .withStartingHeight(ClimberConstants.STARTING_HEIGHT)
+          .withHardLimits(Meters.of(0), Meters.of(.762))
+          .withTelemetry("Elevator", TelemetryVerbosity.HIGH));
 
   public ClimberSubsystem() {}
 
-  public Command setHeight(Distance height) { return elevator.setHeight(height);}
-  public Command sysId() { return elevator.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));}
+  public Command setHeight(Distance height) {
+    return elevator.setHeight(height);
+  }
+
+  // public Command sysId() {
+  //   return elevator.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
+  // }
 
   public Command climbUp() {
-    return elevator.set(0.3);
+    return elevator.set(1);
   }
 
   public Command climbDown() {
-    return elevator.set(-0.3);
+    return elevator.set(-1);
+  }
+
+  public Command climbSTOP() {
+    return elevator.set(0);
   }
 
   @Override
-  public void periodic() { elevator.updateTelemetry(); }
+  public void periodic() {
+    elevator.updateTelemetry();
+  }
 
   @Override
-  public void simulationPeriodic() { elevator.simIterate(); }
+  public void simulationPeriodic() {
+    elevator.simIterate();
+  }
 }
