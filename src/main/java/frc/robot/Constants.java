@@ -50,17 +50,13 @@ public final class Constants {
         public static final double JOYSTICK_DEADBAND = 0.1; // Joystick Deadband
     }
 
-    public static class IndexerConstants {
-        public static final int INDEXER_MOTOR_CAN_ID = 10;
+    public static class ShooterConstants {
+        public static final int SHOOTER_MOTOR_CAN_ID = 2;
     }
 
     public static class ClimberConstants {
         public static final Distance STARTING_HEIGHT = Meters.of(0.5);
         public static final Mass MASS = Pounds.of(16);
-        public static final int CLIMBER_MOTOR_CAN_ID = 20;
-        public static final Distance[] HEIGHT_LIMITS = {
-            Meters.of(0),
-            Meters.of(.762)
-        };
+        public static final int CLIMBER_MOTOR_CAN_ID = 1;
     }
 }
