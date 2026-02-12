@@ -25,10 +25,11 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.RotateCommand;
 import frc.robot.inputs.DriverInput;
-// import frc.robot.inputs.OperatorInput;
+import frc.robot.inputs.OperatorInput;
 import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.OperatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-// import frc.robot.subsystems.OperatorSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveDrive;
 
@@ -44,9 +45,10 @@ public class RobotContainer {
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
   private final ClimberSubsystem climber = new ClimberSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
+  private final IndexerSubsystem indexer = new IndexerSubsystem();
 
-  // private final OperatorSubsystem operatorSubsystem = new OperatorSubsystem(climber, shooter);
-  // private final OperatorInput operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, drivebase, operatorSubsystem);
+  private final OperatorSubsystem operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter);
+  private final OperatorInput operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, drivebase, operatorSubsystem);
   private final DriverInput driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
 
   private final SendableChooser<Command> autoChooser;
@@ -62,13 +64,13 @@ public class RobotContainer {
 
     // Setup Inputs
     driverInput.init(); // Configure our controller to send input to swervedrive
-    // operatorInput.init(); // Configure our controller to send input to operator subsystems
+    operatorInput.init(); // Configure our controller to send input to operator subsystems
 
     // Register Commands
     NamedCommands.registerCommand("driveBackwards", drivebase.driveBackwards().withTimeout(1).withName("Auto.driveBackwards"));
     NamedCommands.registerCommand("driveForwards", drivebase.driveForward().withTimeout(2).withName("Auto.driveForwards"));
 
-    climber.setDefaultCommand(climber.setHeight(Meters.of(0)));
+    climber.setDefaultCommand(climber.moveTo(Meters.of(0)));
 
     // Aliance
     onAllianceChanged(getAlliance());

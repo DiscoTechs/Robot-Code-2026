@@ -5,13 +5,9 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -28,14 +24,13 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
-import yams.motorcontrollers.local.SparkWrapper;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ClimberSubsystem extends SubsystemBase {
   private TalonFX motor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID);
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.CLOSED_LOOP)
-      .withMechanismCircumference(Meters.of(Inches.of(0.25).in(Meters) * 22))
+      .withMechanismCircumference(Meters.of(Inches.of(0.25).times(22).in(Meters)))
       .withClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
       .withSimClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
       .withFeedforward(new ElevatorFeedforward(0, 0, 0))
@@ -46,7 +41,7 @@ public class ClimberSubsystem extends SubsystemBase {
       .withStatorCurrentLimit(Amps.of(40))
       .withOpenLoopRampRate(Seconds.of(0.25))
       .withClosedLoopRampRate(Seconds.of(0.25))
-      .withTelemetry("ElevatorMotor", TelemetryVerbosity.HIGH);
+      .withTelemetry("ClimberMotor", TelemetryVerbosity.HIGH);
 
   private SmartMotorController smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), smcConfig);
   private Elevator elevator = new Elevator(
@@ -54,11 +49,11 @@ public class ClimberSubsystem extends SubsystemBase {
           .withMass(ClimberConstants.MASS)
           .withStartingHeight(ClimberConstants.STARTING_HEIGHT)
           .withHardLimits(Meters.of(0), Meters.of(.762))
-          .withTelemetry("Elevator", TelemetryVerbosity.HIGH));
+          .withTelemetry("Climber", TelemetryVerbosity.HIGH));
 
   public ClimberSubsystem() {}
 
-  public Command setHeight(Distance height) {
+  public Command moveTo(Distance height) {
     return elevator.setHeight(height);
   }
 
@@ -74,7 +69,7 @@ public class ClimberSubsystem extends SubsystemBase {
     return elevator.set(-1);
   }
 
-  public Command climbSTOP() {
+  public Command climbStop() {
     return elevator.set(0);
   }
 
