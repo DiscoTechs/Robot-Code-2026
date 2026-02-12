@@ -27,8 +27,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ClimberSubsystem extends SubsystemBase {
-  private TalonFX motor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID);
-  private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
+  private final SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.CLOSED_LOOP)
       .withMechanismCircumference(Meters.of(Inches.of(0.25).times(22).in(Meters)))
       .withClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
@@ -43,22 +42,25 @@ public class ClimberSubsystem extends SubsystemBase {
       .withClosedLoopRampRate(Seconds.of(0.25))
       .withTelemetry("ClimberMotor", TelemetryVerbosity.HIGH);
 
-  private SmartMotorController smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), smcConfig);
-  private Elevator elevator = new Elevator(
-      new ElevatorConfig(smctl)
-          .withMass(ClimberConstants.MASS)
-          .withStartingHeight(ClimberConstants.STARTING_HEIGHT)
-          .withHardLimits(Meters.of(0), Meters.of(.762))
-          .withTelemetry("Climber", TelemetryVerbosity.HIGH));
+  private SmartMotorController smctl;
+  private Elevator elevator;
 
-  public ClimberSubsystem() {}
+  public ClimberSubsystem() {
+    this.smctl = new TalonFXWrapper(new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID), DCMotor.getKrakenX60(1), smcConfig);
+    this.elevator = new Elevator(
+        new ElevatorConfig(smctl)
+            .withMass(ClimberConstants.MASS)
+            .withStartingHeight(ClimberConstants.STARTING_HEIGHT)
+            .withHardLimits(Meters.of(0), Meters.of(.762))
+            .withTelemetry("Climber", TelemetryVerbosity.HIGH));
+  }
 
   public Command moveTo(Distance height) {
     return elevator.setHeight(height);
   }
 
   // public Command sysId() {
-  //   return elevator.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
+  // return elevator.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
   // }
 
   public Command climbUp() {

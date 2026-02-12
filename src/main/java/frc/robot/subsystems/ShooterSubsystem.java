@@ -12,7 +12,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -25,8 +25,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private TalonFX motor = new TalonFX(Constants.ShooterConstants.SHOOTER_MOTOR_CAN_ID);
-    private SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
+    private final SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
         .withGearing(new MechanismGearing(GearBox.fromReductionStages(4)))
         .withStatorCurrentLimit(Amps.of(40))
         .withMotorInverted(true)
@@ -35,15 +34,18 @@ public class ShooterSubsystem extends SubsystemBase {
         .withClosedLoopController(0.01, 0.0, 0.0, RPM.of(6000), RotationsPerSecondPerSecond.of(2500))
         .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
 
-    private SmartMotorController smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);
-    private FlyWheel shooter = new FlyWheel(
-        new FlyWheelConfig(smctl)
+    private final SmartMotorController smctl;
+    private final FlyWheel shooter;
+
+    public ShooterSubsystem() {
+        this.smctl = new TalonFXWrapper(new TalonFX(ShooterConstants.SHOOTER_MOTOR_CAN_ID), DCMotor.getKrakenX60(1), config);
+        this.shooter = new FlyWheel(
+            new FlyWheelConfig(smctl)
                     .withDiameter(Inches.of(1.5))
                     .withMass(Pounds.of(0.5))
                     .withSoftLimit(RPM.of(0), RPM.of(1000))
                     .withTelemetry("Indexer", TelemetryVerbosity.HIGH));
-
-    public ShooterSubsystem() {}
+    }
 
     public Command setTarget(AngularVelocity target) {
         return shooter.setSpeed(target);
