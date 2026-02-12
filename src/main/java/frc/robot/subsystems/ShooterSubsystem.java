@@ -23,8 +23,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.system.plant.DCMotor;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-public class IndexerSubsystem extends SubsystemBase {
-    private TalonFX talonFX = new TalonFX(Constants.IndexerConstants.INDEXER_MOTOR_CAN_ID);
+public class ShooterSubsystem extends SubsystemBase {
+    private TalonFX motor = new TalonFX(Constants.ShooterConstants.SHOOTER_MOTOR_CAN_ID);
     private SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
             .withGearing(new MechanismGearing(GearBox.fromReductionStages(4)))
             .withStatorCurrentLimit(Amps.of(40))
@@ -34,30 +34,30 @@ public class IndexerSubsystem extends SubsystemBase {
             .withClosedLoopController(0.00015, 0.0, 0.0, RPM.of(6000), RotationsPerSecondPerSecond.of(2500))
             .withTelemetry("IndexerMotor", TelemetryVerbosity.HIGH);
     
-    private SmartMotorController smctl = new TalonFXWrapper(talonFX, DCMotor.getNEO(1), config);
-    private FlyWheel indexer = new FlyWheel(
-            new FlyWheelConfig(smctl)
-                    .withDiameter(Inches.of(4))
+    private SmartMotorController smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);
+    private FlyWheel shooter = new FlyWheel(
+        new FlyWheelConfig(smctl)
+                    .withDiameter(Inches.of(1.5))
                     .withMass(Pounds.of(0.5))
-                    .withUpperSoftLimit(RPM.of(6000))
-                    .withLowerSoftLimit(RPM.of(-6000))
                     .withTelemetry("Indexer", TelemetryVerbosity.HIGH));
 
-    public IndexerSubsystem() {}
+    public ShooterSubsystem() {}
 
     public Command forward() {
-        return indexer.setSpeed(RPM.of(6000)).finallyDo(() -> smctl.setDutyCycle(0));
+        return shooter.set(0.5);
     }
 
     public Command reverse() {
-        return indexer.setSpeed(RPM.of(-6000)).finallyDo(() -> smctl.setDutyCycle(0));
+        return shooter.set(-0.5);
     }
 
-    public Command stop() { return indexer.set(0); }
+    public Command stop() {
+        return shooter.set(0);
+    }
 
     @Override
-    public void periodic() { indexer.updateTelemetry(); }
+    public void periodic() { shooter.updateTelemetry(); }
 
     @Override
-    public void simulationPeriodic() { indexer.simIterate(); }
+    public void simulationPeriodic() { shooter.simIterate(); }
 }
