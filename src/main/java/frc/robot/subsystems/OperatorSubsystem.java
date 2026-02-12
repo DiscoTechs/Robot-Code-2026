@@ -1,34 +1,55 @@
-// package frc.robot.subsystems;
+package frc.robot.subsystems;
 
-// import edu.wpi.first.wpilibj2.command.Command;
-// import edu.wpi.first.wpilibj2.command.Commands;
-// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
 
-// public class OperatorSubsystem extends SubsystemBase {
-//     private final ClimberSubsystem climber;
-//     private final IndexerSubsystem shooter;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-//     public OperatorSubsystem(ClimberSubsystem climb, IndexerSubsystem ind) {
-//         this.climber = climb;
-//         this.shooter = ind;
-//     }
+public class OperatorSubsystem extends SubsystemBase {
+    public final ClimberSubsystem climber;
+    public final IndexerSubsystem indexer;
 
-//     public Command indexerIntake() { return shooter.forward(); }
-//     public Command indexerOuttake() { return shooter.reverse(); }
-//     public Command indexerStop() { return shooter.stop(); }
+    public AngularVelocity targetShooterSpeed = RPM.of(0);
+    public final Trigger isShooterAtSpeed;
+    public final ShooterSubsystem shooter;
 
-//     public Command climbUp() { return climber.climbUp(); }
-//     public Command climbDown() { return climber.climbDown(); }
+    public OperatorSubsystem(ClimberSubsystem climb, IndexerSubsystem ind, ShooterSubsystem shoot) {
+        this.climber = climb;
+        this.shooter = shoot;
+        this.indexer = ind;
 
-//     public Command intakeAll() {
-//         return Commands.parallel(
-//             shooter.forward().asProxy()
-//         );
-//     }
+        this.isShooterAtSpeed = new Trigger(
+            () -> Math.abs(shooter.getSpeed().in(RPM) - targetShooterSpeed.in(RPM)) < RPM.of(100).in(RPM)
+        );
+    }
 
-//     public Command outtakeAll() {
-//         return Commands.parallel(
-//             shooter.reverse().asProxy()
-//         );
-//     }
-// }
+    public Command intakeAll() {
+        return Commands.parallel(
+            indexer.forward().asProxy(),
+            shooter.forward().asProxy()
+        );
+    }
+
+    public Command outtakeAll() {
+        return Commands.parallel(
+            indexer.reverse().asProxy(),
+            shooter.forward().asProxy()
+        );
+    }
+
+    public Command stopAll() {
+        return Commands.parallel(
+            indexer.stop().asProxy(),
+            shooter.stop().asProxy()
+        );
+    }
+
+    @Override
+    public void periodic() {
+        System.out.println("Shooter: " + isShooterAtSpeed.getAsBoolean() + " (" + Math.round(shooter.getSpeed().in(RPM)) + "/" + Math.round(targetShooterSpeed.in(RPM)) + " RPM)");
+    }
+}
