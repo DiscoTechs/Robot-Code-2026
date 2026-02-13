@@ -52,6 +52,7 @@ public final class Constants {
 
     public static class ShooterConstants {
         public static final int SHOOTER_MOTOR_CAN_ID = 2;
+        public static final int TURRET_MOTOR_CAN_ID = 3;
     }
 
     public static class ClimberConstants {
