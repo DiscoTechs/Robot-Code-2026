@@ -35,7 +35,7 @@ public final class Constants {
     public static final double CONTROL_LOOP_PERIOD_SEC = 0.13; // s, 20ms + 110ms spark max velocity lag
 
     public static class Limelight {
-        public static final boolean ENABLED = false;
+        public static final boolean ENABLED = true;
         public static final Pose3d ROBOT_TO_CAMERA_POSE = new Pose3d(
                 Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),
