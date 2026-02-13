@@ -12,7 +12,6 @@ import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import limelight.results.RawFiducial;
 import limelight.networktables.PoseEstimate;
 
-// TODO: Verify that this code works
 public class DriveToTarget extends Command {
     private final PIDController turnPID = new PIDController(0.03, 0, 0.001);
     private final SwerveSubsystem drivetrain;
