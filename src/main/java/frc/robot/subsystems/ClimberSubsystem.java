@@ -29,7 +29,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class ClimberSubsystem extends SubsystemBase {
   private final SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
       .withControlMode(ControlMode.CLOSED_LOOP)
-      .withMechanismCircumference(Meters.of(Inches.of(0.25).times(22).in(Meters)))
+      .withMechanismCircumference(Inches.of(1.5).times(Math.PI))
       .withClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
       .withSimClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
       .withFeedforward(new ElevatorFeedforward(0, 0, 0))
@@ -50,8 +50,8 @@ public class ClimberSubsystem extends SubsystemBase {
     this.elevator = new Elevator(
         new ElevatorConfig(smctl)
             .withMass(ClimberConstants.MASS)
-            .withStartingHeight(ClimberConstants.STARTING_HEIGHT)
-            .withHardLimits(Meters.of(0), Meters.of(.762))
+            .withStartingHeight(Meters.of(0))
+            .withSoftLimits(Meters.of(0), Meters.of(0.75))
             .withTelemetry("Climber", TelemetryVerbosity.HIGH));
   }
 
@@ -64,20 +64,23 @@ public class ClimberSubsystem extends SubsystemBase {
   // }
 
   public Command climbUp() {
-    return elevator.set(1);
+    return elevator.set(0.5);
   }
 
   public Command climbDown() {
-    return elevator.set(-1);
+    return elevator.set(-0.5);
   }
 
   public Command climbStop() {
+    System.out.println("STOP: " + elevator.getHeight());
     return elevator.set(0);
   }
 
   @Override
   public void periodic() {
     elevator.updateTelemetry();
+
+    System.out.println("Height:" + elevator.getHeight());
   }
 
   @Override
