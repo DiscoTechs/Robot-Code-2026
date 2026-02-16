@@ -1,16 +1,15 @@
 package frc.robot;
 
-import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 
-import swervelib.simulation.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt;
-import swervelib.simulation.ironmaple.simulation.SimulatedArena;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.geometry.Pose3d;
-import frc.robot.util.CommandsLogging;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.CommandsLogging;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -19,6 +18,10 @@ public class Robot extends LoggedRobot {
   private static Robot instance;
   private SimulatedArena arena;
   private Timer disabledTimer;
+
+  // private CommandXboxController controller = new CommandXboxController(0);
+  // private ShooterSubsystem shooter = new ShooterSubsystem();
+  // private ClimberSubsystem climber = new ClimberSubsystem();
 
   public Robot() {
     // Setup Logging
@@ -33,6 +36,16 @@ public class Robot extends LoggedRobot {
           (intr) -> CommandsLogging.runningInterrupters.put(intr, inted));
       CommandsLogging.commandEnded(inted);
     });
+
+    // controller.y().whileTrue(climber.climbUp());
+    // controller.a().whileTrue(climber.climbDown());
+    // controller.x().whileTrue(climber.climbStop());
+
+    // controller.rightTrigger().onTrue(shooter.forward());
+    // controller.rightTrigger().onFalse(shooter.stop());
+
+    // controller.leftTrigger().onTrue(Commands.runOnce(() -> shooter.reverse()));
+    // controller.leftTrigger().onFalse(Commands.runOnce(() -> shooter.stop()));
 
     // Init Robot
     disabledTimer = new Timer(); // Create a timer to disable motor brake a few seconds after disable
@@ -118,7 +131,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationInit() {
     SimulatedArena.getInstance().shutDown();
-    SimulatedArena.overrideInstance(new Arena2026Rebuilt());
+    // SimulatedArena.overrideInstance(new Arena2026Rebuilt());
 
     arena = SimulatedArena.getInstance();
     arena.addDriveTrainSimulation(m_robotContainer.getSwerveDrive().getMapleSimDrive().get());
