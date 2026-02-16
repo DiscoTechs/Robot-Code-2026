@@ -26,25 +26,27 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ShooterSubsystem extends SubsystemBase {
     private final SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
-        .withGearing(new MechanismGearing(GearBox.fromReductionStages(4)))
-        .withStatorCurrentLimit(Amps.of(40))
-        .withMotorInverted(true)
-        .withIdleMode(MotorMode.COAST)
-        .withControlMode(ControlMode.CLOSED_LOOP)
-        .withClosedLoopController(0.01, 0.0, 0.0, RPM.of(6000), RotationsPerSecondPerSecond.of(2500))
-        .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
+            .withGearing(new MechanismGearing(GearBox.fromReductionStages(4)))
+            .withStatorCurrentLimit(Amps.of(40))
+            .withMotorInverted(true)
+            .withIdleMode(MotorMode.COAST)
+            .withControlMode(ControlMode.CLOSED_LOOP)
+            .withClosedLoopController(0.01, 0.0, 0.0, RPM.of(6000), RotationsPerSecondPerSecond.of(2500))
+            .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
 
-    private final SmartMotorController smctl;
-    private final FlyWheel shooter;
+    private SmartMotorController smctl;
+    private FlyWheel shooter;
 
     public ShooterSubsystem() {
-        this.smctl = new TalonFXWrapper(new TalonFX(ShooterConstants.SHOOTER_MOTOR_CAN_ID), DCMotor.getKrakenX60(1), config);
-        this.shooter = new FlyWheel(
-            new FlyWheelConfig(smctl)
-                    .withDiameter(Inches.of(1.5))
-                    .withMass(Pounds.of(0.5))
-                    .withSoftLimit(RPM.of(0), RPM.of(1000))
-                    .withTelemetry("Indexer", TelemetryVerbosity.HIGH));
+        // this.smctl = new TalonFXWrapper(new
+        // TalonFX(ShooterConstants.SHOOTER_MOTOR_CAN_ID), DCMotor.getKrakenX60(1),
+        // config);
+        // this.shooter = new FlyWheel(
+        // new FlyWheelConfig(smctl)
+        // .withDiameter(Inches.of(1.5))
+        // .withMass(Pounds.of(0.5))
+        // .withSoftLimit(RPM.of(0), RPM.of(1000))
+        // .withTelemetry("Indexer", TelemetryVerbosity.HIGH));
     }
 
     public Command setTarget(AngularVelocity target) {
@@ -68,8 +70,16 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     @Override
-    public void periodic() { shooter.updateTelemetry(); }
+    public void periodic() {
+        if (shooter != null) {
+            shooter.updateTelemetry();
+        }
+    }
 
     @Override
-    public void simulationPeriodic() { shooter.simIterate(); }
+    public void simulationPeriodic() {
+        if (shooter != null) {
+            shooter.simIterate();
+        }
+    }
 }

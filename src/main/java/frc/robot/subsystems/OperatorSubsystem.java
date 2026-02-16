@@ -12,44 +12,45 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class OperatorSubsystem extends SubsystemBase {
     public final ClimberSubsystem climber;
     public final IndexerSubsystem indexer;
+    public final ShooterSubsystem shooter;
+    public final TurretSubsystem turret;
 
     public AngularVelocity targetShooterSpeed = RPM.of(0);
     public final Trigger isShooterAtSpeed;
-    public final ShooterSubsystem shooter;
 
-    public OperatorSubsystem(ClimberSubsystem climb, IndexerSubsystem ind, ShooterSubsystem shoot) {
+    public OperatorSubsystem(ClimberSubsystem climb, IndexerSubsystem ind, ShooterSubsystem shoot,
+            TurretSubsystem turr) {
         this.climber = climb;
         this.shooter = shoot;
         this.indexer = ind;
+        this.turret = turr;
 
         this.isShooterAtSpeed = new Trigger(
-            () -> Math.abs(shooter.getSpeed().in(RPM) - targetShooterSpeed.in(RPM)) < RPM.of(100).in(RPM)
-        );
+                () -> Math.abs(shooter.getSpeed().in(RPM) - targetShooterSpeed.in(RPM)) < RPM.of(100).in(RPM));
     }
 
     public Command intakeAll() {
         return Commands.parallel(
-            indexer.forward().asProxy(),
-            shooter.forward().asProxy()
-        );
+                indexer.forward().asProxy(),
+                shooter.forward().asProxy());
     }
 
     public Command outtakeAll() {
         return Commands.parallel(
-            indexer.reverse().asProxy(),
-            shooter.forward().asProxy()
-        );
+                indexer.reverse().asProxy(),
+                shooter.forward().asProxy());
     }
 
     public Command stopAll() {
         return Commands.parallel(
-            indexer.stop().asProxy(),
-            shooter.stop().asProxy()
-        );
+                indexer.stop().asProxy(),
+                shooter.stop().asProxy());
     }
 
     @Override
     public void periodic() {
-        System.out.println("Shooter: " + isShooterAtSpeed.getAsBoolean() + " (" + Math.round(shooter.getSpeed().in(RPM)) + "/" + Math.round(targetShooterSpeed.in(RPM)) + " RPM)");
+        // System.out.println("Shooter: " + isShooterAtSpeed.getAsBoolean() + " (" +
+        // Math.round(shooter.getSpeed().in(RPM)) + "/" +
+        // Math.round(targetShooterSpeed.in(RPM)) + " RPM)");
     }
 }
