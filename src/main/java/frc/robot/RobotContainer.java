@@ -31,6 +31,7 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.OperatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import swervelib.SwerveDrive;
 
 /**
@@ -42,26 +43,35 @@ import swervelib.SwerveDrive;
  * trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  // Instantiate subsystems.
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
   private final ClimberSubsystem climber = new ClimberSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final IndexerSubsystem indexer = new IndexerSubsystem();
+  private final TurretSubsystem turret = new TurretSubsystem();
 
   private final OperatorSubsystem operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter);
-  private final OperatorInput operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, drivebase, operatorSubsystem);
+  private final OperatorInput operatorInput = new OperatorInput(
+    Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, 
+    drivebase, 
+    operatorSubsystem,
+    turret
+  );
   private final DriverInput driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
 
   private final SendableChooser<Command> autoChooser;
   private Alliance currentAlliance = Alliance.Red;
 
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
-  public RobotContainer() {
+  public  RobotContainer() {
+
     if (!Robot.isReal()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
-
+    
     // Setup Inputs
     driverInput.init(); // Configure our controller to send input to swervedrive
     operatorInput.init(); // Configure our controller to send input to operator subsystems
