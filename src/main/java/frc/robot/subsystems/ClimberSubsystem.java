@@ -78,13 +78,15 @@ public class ClimberSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    elevator.updateTelemetry();
-
-    System.out.println("Height:" + elevator.getHeight());
+    if (elevator != null) {
+      elevator.updateTelemetry();
+    }
   }
 
   @Override
   public void simulationPeriodic() {
-    elevator.simIterate();
+    if (elevator != null) {
+      elevator.simIterate();
+    }
   }
 }
