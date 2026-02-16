@@ -30,7 +30,7 @@ public class TurretSubsystem extends SubsystemBase {
     private final SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
             .withControlMode(ControlMode.CLOSED_LOOP)
             .withClosedLoopController(4, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
-            .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+            .withGearing(new MechanismGearing(GearBox.fromReductionStages(12)))
             .withIdleMode(MotorMode.BRAKE)
             .withMotorInverted(false)
             .withStatorCurrentLimit(Amps.of(40))
@@ -39,19 +39,19 @@ public class TurretSubsystem extends SubsystemBase {
             .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH);
 
     private SmartMotorController smctl;
+    private TalonFX motor;
     private Pivot turret;
 
     public TurretSubsystem() {
-        // this.smctl = new TalonFXWrapper(new
-        // TalonFX(TurretConstants.TURRET_MOTOR_CAN_ID), DCMotor.getKrakenX60(1),
-        // config);
-        // this.turret = new Pivot(new PivotConfig(smctl)
-        // .withStartingPosition(Degrees.of(0)) // TODO: Use absolute encoder get
-        // degrees
-        // .withWrapping(Degrees.of(0), Degrees.of(360))
-        // .withHardLimit(Degrees.of(0), Degrees.of(720))
-        // .withMOI(Meters.of(0.25), Pounds.of(4))
-        // .withTelemetry("TurretPivot", TelemetryVerbosity.HIGH));
+        // this.motor = new TalonFX(TurretConstants.TURRET_MOTOR_CAN_ID);
+        // this.smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);
+        // this.turret = new Pivot(
+        //     new PivotConfig(smctl)
+        //         .withStartingPosition(Degrees.of(0)) // TODO: Use absolute encoder get degrees
+        //         .withWrapping(Degrees.of(0), Degrees.of(360))
+        //         .withSoftLimits(Degrees.of(-135), Degrees.of(135))
+        //         .withMOI(Meters.of(0.25), Pounds.of(4))
+        //         .withTelemetry("TurretPivot", TelemetryVerbosity.HIGH));
     }
 
     public Command setAngle(Angle angle) {
@@ -62,11 +62,25 @@ public class TurretSubsystem extends SubsystemBase {
         return turret.getAngle();
     }
 
-    public Command spin(double speed) {
+    public Command set(double speed) {
         return turret.set(speed);
     }
 
     public Command stop() {
         return turret.set(0);
+    }
+
+    @Override
+    public void periodic() {
+        if (turret != null) {
+            turret.updateTelemetry();
+        }
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        if (turret != null) {
+            turret.simIterate();
+        }
     }
 }

@@ -36,11 +36,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private SmartMotorController smctl;
     private FlyWheel shooter;
+    private TalonFX motor;
 
     public ShooterSubsystem() {
-        // this.smctl = new TalonFXWrapper(new
-        // TalonFX(ShooterConstants.SHOOTER_MOTOR_CAN_ID), DCMotor.getKrakenX60(1),
-        // config);
+        // this.motor = new TalonFX(ShooterConstants.SHOOTER_MOTOR_CAN_ID);
+        // this.smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);
         // this.shooter = new FlyWheel(
         // new FlyWheelConfig(smctl)
         // .withDiameter(Inches.of(1.5))
