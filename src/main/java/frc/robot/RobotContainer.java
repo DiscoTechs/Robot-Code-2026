@@ -50,8 +50,7 @@ public class RobotContainer {
     private final TurretSubsystem turret = new TurretSubsystem();
 
     private final OperatorSubsystem operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter, turret);
-    private final OperatorInput operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT,
-            drivebase, operatorSubsystem);
+    private final OperatorInput operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, drivebase, operatorSubsystem);
     private final DriverInput driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT,
             drivebase);
 
