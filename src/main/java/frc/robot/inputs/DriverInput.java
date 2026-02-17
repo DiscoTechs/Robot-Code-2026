@@ -3,6 +3,7 @@ package frc.robot.inputs;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.OperatorConstants;
+import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.commands.DriveToTarget;
@@ -27,6 +28,7 @@ public class DriverInput {
                 .robotRelative(() -> robotRelative)
                 .allianceRelativeControl(() -> !robotRelative);
 
+        Logger.recordOutput("RobotPOV", robotRelative ? "Robot" : "Field");
         drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity));
 
         // if (RobotBase.isSimulation()) {
@@ -57,7 +59,10 @@ public class DriverInput {
             controller.start().onTrue(Commands.runOnce(drivebase::zeroGyro));
             controller.back().whileTrue(Commands.none());
 
-            controller.rightBumper().onTrue(Commands.runOnce(() -> { robotRelative = !robotRelative; }));
+            controller.rightBumper().onTrue(Commands.runOnce(() -> {
+                Logger.recordOutput("RobotPOV", robotRelative ? "Robot" : "Field");
+                robotRelative = !robotRelative;
+            }));
             controller.leftBumper().whileTrue(new DriveToTarget(drivebase));
             // controller.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
         }
