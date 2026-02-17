@@ -28,7 +28,7 @@ import swervelib.math.Matter;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(50);
+    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(60);
     public static final Matter CHASSIS_MATTER = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS_KG);
     public static final double MAX_LINEAR_SPEED_MPS = Units.feetToMeters(14.5); // Robot maximum speed (m/s). Used to limit acceleration.
     public static final double WHEEL_LOCK_TIME_SEC = 10; // Hold time on motor brakes when disabled (seconds)
@@ -57,10 +57,11 @@ public final class Constants {
     }
 
     public static class ShooterConstants {
-        public static final int SHOOTER_MOTOR_CAN_ID = 2;
+        public static final int SHOOTER_MOTOR_CAN_ID = 8; //make 2 for actual robot 
     }
 
     public static class TurretConstants {
         public static final int TURRET_MOTOR_CAN_ID = 3;
     }
 }
+
