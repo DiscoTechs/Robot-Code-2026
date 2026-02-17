@@ -27,7 +27,12 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class TurretSubsystem extends SubsystemBase {
-    private final SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
+    private SmartMotorController smctl;
+    private TalonFX motor;
+    private Pivot turret;
+
+    public TurretSubsystem() {
+        SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
             .withControlMode(ControlMode.CLOSED_LOOP)
             .withClosedLoopController(4, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
             .withGearing(new MechanismGearing(GearBox.fromReductionStages(12)))
@@ -38,20 +43,15 @@ public class TurretSubsystem extends SubsystemBase {
             .withOpenLoopRampRate(Seconds.of(0.25))
             .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH);
 
-    private SmartMotorController smctl;
-    private TalonFX motor;
-    private Pivot turret;
-
-    public TurretSubsystem() {
-        // this.motor = new TalonFX(TurretConstants.TURRET_MOTOR_CAN_ID);
-        // this.smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);
-        // this.turret = new Pivot(
-        //     new PivotConfig(smctl)
-        //         .withStartingPosition(Degrees.of(0)) // TODO: Use absolute encoder get degrees
-        //         .withWrapping(Degrees.of(0), Degrees.of(360))
-        //         .withSoftLimits(Degrees.of(-135), Degrees.of(135))
-        //         .withMOI(Meters.of(0.25), Pounds.of(4))
-        //         .withTelemetry("TurretPivot", TelemetryVerbosity.HIGH));
+        this.motor = new TalonFX(TurretConstants.TURRET_MOTOR_CAN_ID);
+        this.smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);
+        this.turret = new Pivot(
+            new PivotConfig(smctl)
+                .withStartingPosition(Degrees.of(0)) // TODO: Use absolute encoder get degrees
+                .withWrapping(Degrees.of(0), Degrees.of(360))
+                .withSoftLimits(Degrees.of(-135), Degrees.of(135))
+                .withMOI(Meters.of(0.25), Pounds.of(4))
+                .withTelemetry("TurretPivot", TelemetryVerbosity.HIGH));
     }
 
     public Command setAngle(Angle angle) {

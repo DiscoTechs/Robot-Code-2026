@@ -1,12 +1,11 @@
 package frc.robot.inputs;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.DriveToTarget;
 import frc.robot.subsystems.SwerveSubsystem;
+import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.commands.DriveToTarget;
 import swervelib.SwerveInputStream;
 
 public class DriverInput {

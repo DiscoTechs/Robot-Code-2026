@@ -27,28 +27,28 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ClimberSubsystem extends SubsystemBase {
-    private final SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
-            .withControlMode(ControlMode.CLOSED_LOOP)
-            .withMechanismCircumference(Inches.of(1.5).times(Math.PI))
-            .withClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
-            .withSimClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
-            .withFeedforward(new ElevatorFeedforward(0, 0, 0))
-            .withSimFeedforward(new ElevatorFeedforward(0, 0, 0))
-            .withGearing(new MechanismGearing(GearBox.fromReductionStages(100)))
-            .withMotorInverted(true)
-            .withIdleMode(MotorMode.BRAKE)
-            .withStatorCurrentLimit(Amps.of(40))
-            .withOpenLoopRampRate(Seconds.of(0.25))
-            .withClosedLoopRampRate(Seconds.of(0.25))
-            .withTelemetry("ClimberMotor", TelemetryVerbosity.HIGH);
-
     private SmartMotorController smctl;
     private Elevator elevator;
     private TalonFX motor;
 
     public ClimberSubsystem() {
+        SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
+                .withControlMode(ControlMode.CLOSED_LOOP)
+                .withMechanismCircumference(Inches.of(1.5).times(Math.PI))
+                .withClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
+                .withSimClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
+                .withFeedforward(new ElevatorFeedforward(0, 0, 0))
+                .withSimFeedforward(new ElevatorFeedforward(0, 0, 0))
+                .withGearing(new MechanismGearing(GearBox.fromReductionStages(100)))
+                .withMotorInverted(true)
+                .withIdleMode(MotorMode.BRAKE)
+                .withStatorCurrentLimit(Amps.of(40))
+                .withOpenLoopRampRate(Seconds.of(0.25))
+                .withClosedLoopRampRate(Seconds.of(0.25))
+                .withTelemetry("ClimberMotor", TelemetryVerbosity.HIGH);
+
         this.motor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID);
-        this.smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), smcConfig);
+        this.smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);
         this.elevator = new Elevator(
                 new ElevatorConfig(smctl)
                         .withMass(ClimberConstants.MASS)

@@ -142,9 +142,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (Constants.Limelight.ENABLED) {
-      // swerveDrive.updateOdometry();
+    swerveDrive.updateOdometry();
 
+    if (Constants.Limelight.ENABLED) {
       poseEstimator.getPoseEstimate().ifPresent((PoseEstimate poseEstimate) -> {
         if (poseEstimate.tagCount > 0) {
           distanceToHub = poseEstimate.pose.toPose2d().minus(redHub.toPose2d()).getTranslation().getNorm();
