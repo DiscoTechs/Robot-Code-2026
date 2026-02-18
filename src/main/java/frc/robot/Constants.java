@@ -10,9 +10,16 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Radians;
 
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
@@ -29,8 +36,10 @@ import swervelib.math.Matter;
  */
 public final class Constants {
     public static final double ROBOT_MASS_KG = Units.lbsToKilograms(60);
-    public static final Matter CHASSIS_MATTER = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS_KG);
-    public static final double MAX_LINEAR_SPEED_MPS = Units.feetToMeters(14.5); // Robot maximum speed (m/s). Used to limit acceleration.
+    public static final Matter CHASSIS_MATTER = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)),
+            ROBOT_MASS_KG);
+    public static final double MAX_LINEAR_SPEED_MPS = Units.feetToMeters(14.5); // Robot maximum speed (m/s). Used to
+                                                                                // limit acceleration.
     public static final double WHEEL_LOCK_TIME_SEC = 10; // Hold time on motor brakes when disabled (seconds)
     public static final double CONTROL_LOOP_PERIOD_SEC = 0.13; // s, 20ms + 110ms spark max velocity lag
 
@@ -41,6 +50,31 @@ public final class Constants {
                 Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),
                 new Rotation3d(0, Degrees.of(0).in(Radians), Degrees.of(0).in(Radians)));
+    }
+
+    public static class PathplannerConstants {
+        public static final boolean enableFeedforward = true;
+        public static PPHolonomicDriveController holonomicDriveController = new PPHolonomicDriveController(
+                new PIDConstants(2.0, 0.0, 0.3), // Translation PID constants
+                new PIDConstants(2.0, 0.0, 0.5) // Rotation PID constants
+        );
+        public static final RobotConfig config = new RobotConfig(
+                ROBOT_MASS_KG,
+                5.0, // Robot MOI (kg*m^2) - Not super important
+                new ModuleConfig(
+                        0.0508,
+                        3.0,
+                        1.1,
+                        DCMotor.getNEO(1).withReduction(6.75),
+                        50.0,
+                        1),
+                // Swerve Drive Module Locations
+                // should be in FL, FR, BL, BR order.
+                new Translation2d(0.267, 0.267), // FL
+                new Translation2d(0.267, -0.267), // FR
+                new Translation2d(-0.267, 0.267), // BL
+                new Translation2d(-0.267, -0.267) // BR
+        );
     }
 
     public static class OperatorConstants {
@@ -57,7 +91,7 @@ public final class Constants {
     }
 
     public static class ShooterConstants {
-        public static final int SHOOTER_MOTOR_CAN_ID = 8; //make 2 for actual robot 
+        public static final int SHOOTER_MOTOR_CAN_ID = 8; // make 2 for actual robot
     }
 
     public static class TurretConstants {
@@ -68,4 +102,3 @@ public final class Constants {
         public static final int INDEXER_MOTOR_CAN_ID = 0; // Unknown motor ID, placeholder value
     }
 }
-

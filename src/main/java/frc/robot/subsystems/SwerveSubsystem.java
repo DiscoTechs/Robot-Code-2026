@@ -103,7 +103,7 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.setHeadingCorrection(false);
     // Heading correction should only be used while controlling the robot via angle.
 
-    swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation);
+    swerveDrive.setCosineCompensator(false); // !SwerveDriveTelemetry.isSimulation
     // Disables cosine compensation for simulations since it causes discrepancies
     // not seen in real life.
 
@@ -119,7 +119,29 @@ public class SwerveSubsystem extends SubsystemBase {
     // over the internal encoder and push the offsets onto it. Throws warning if not
     // possible
 
-    setupPathPlanner();
+    // PathPlanner
+    try {
+      AutoBuilder.configure(
+          this::getPose,
+          this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+          this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+          (speedsRobotRelative, moduleFeedForwards) -> {
+            if (Constants.PathplannerConstants.enableFeedforward) {
+              swerveDrive.drive(speedsRobotRelative, swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
+                  moduleFeedForwards.linearForces());
+            } else {
+              swerveDrive.setChassisSpeeds(speedsRobotRelative);
+            }
+          },
+          Constants.PathplannerConstants.holonomicDriveController,
+          Constants.PathplannerConstants.config,
+          this::isRedAlliance, this);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    // Preload PathPlanner Path finding IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
+    CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
     if (Constants.Limelight.ENABLED) {
       limelight = new Limelight("limelight");
@@ -152,7 +174,8 @@ public class SwerveSubsystem extends SubsystemBase {
           Logger.recordOutput("Limelight/tagCount", poseEstimate.tagCount);
           Logger.recordOutput("FieldSimulation/LLPose", poseEstimate.pose);
           Logger.recordOutput("FieldSimulation/hubDistance", distanceToHub);
-          // swerveDrive.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds);
+          // swerveDrive.addVisionMeasurement(poseEstimate.pose.toPose2d(),
+          // poseEstimate.timestampSeconds);
         }
       });
     }
@@ -160,73 +183,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-  }
-
-  /**
-   * Setup AutoBuilder for PathPlanner.
-   */
-  public void setupPathPlanner() {
-    // Load the RobotConfig from the GUI settings. You should probably
-    // store this in your Constants file
-    RobotConfig config;
-    try {
-      config = RobotConfig.fromGUISettings();
-
-      final boolean enableFeedforward = true;
-      // Configure AutoBuilder last
-      AutoBuilder.configure(
-          this::getPose,
-          // Robot pose supplier
-          this::resetOdometry,
-          // Method to reset odometry (will be called if your auto has a starting pose)
-          this::getRobotVelocity,
-          // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-          (speedsRobotRelative, moduleFeedForwards) -> {
-            if (enableFeedforward) {
-              swerveDrive.drive(
-                  speedsRobotRelative,
-                  swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
-                  moduleFeedForwards.linearForces());
-            } else {
-              swerveDrive.setChassisSpeeds(speedsRobotRelative);
-            }
-          },
-          // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also
-          // optionally outputs individual module feedforwards
-          new PPHolonomicDriveController(
-              // PPHolonomicController is the built in path following controller for holonomic
-              // drive trains
-              new PIDConstants(2.0, 0.0, 0.3), // Drive (Translation)
-              // Translation PID constants
-              new PIDConstants(2.0, 0.0, 0.5) // Rotation
-          // Rotation PID constants
-          ),
-          config,
-          // The robot configuration
-          () -> {
-            // Boolean supplier that controls when the path will be mirrored for the red
-            // alliance
-            // This will flip the path being followed to the red side of the field.
-            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-            var alliance = DriverStation.getAlliance();
-            if (alliance.isPresent()) {
-              return alliance.get() == DriverStation.Alliance.Red;
-            }
-            return false;
-          },
-          this
-      // Reference to this subsystem to set requirements
-      );
-
-    } catch (Exception e) {
-      // Handle exception as needed
-      e.printStackTrace();
-    }
-
-    // Preload PathPlanner Path finding
-    // IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
-    CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
   }
 
   // /**
@@ -645,7 +601,7 @@ public class SwerveSubsystem extends SubsystemBase {
         headingX,
         headingY,
         getHeading().getRadians(),
-      Constants.MAX_LINEAR_SPEED_MPS);
+        Constants.MAX_LINEAR_SPEED_MPS);
   }
 
   /**
@@ -665,7 +621,7 @@ public class SwerveSubsystem extends SubsystemBase {
         scaledInputs.getY(),
         angle.getRadians(),
         getHeading().getRadians(),
-      Constants.MAX_LINEAR_SPEED_MPS);
+        Constants.MAX_LINEAR_SPEED_MPS);
   }
 
   /**
