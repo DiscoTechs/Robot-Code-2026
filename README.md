@@ -18,6 +18,7 @@ This project contains the control software for our 2026 FRC competition robot, d
 2. Open the project in VS Code with the WPILib extension
 3. Run `./gradlew build` to compile the code
 4. Deploy to the robot with `./gradlew deploy`
+5. (Optional) FRC Driver Station Auto launch with elastic. Please checkout the [WPILib Docs](https://docs.wpilib.org/en/stable/docs/software/driverstation/manually-setting-the-driver-station-to-start-custom-dashboard.html).
 
 ## Project Structure
 
