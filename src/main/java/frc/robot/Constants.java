@@ -63,5 +63,9 @@ public final class Constants {
     public static class TurretConstants {
         public static final int TURRET_MOTOR_CAN_ID = 3;
     }
+
+    public static class IndexerConstants {
+        public static final int INDEXER_MOTOR_CAN_ID = 0; // Unknown motor ID, placeholder value
+    }
 }
 
