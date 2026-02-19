@@ -35,13 +35,14 @@ import swervelib.math.Matter;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(60);
+    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(50);
     public static final Matter CHASSIS_MATTER = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)),
             ROBOT_MASS_KG);
     public static final double MAX_LINEAR_SPEED_MPS = Units.feetToMeters(14.5); // Robot maximum speed (m/s). Used to
                                                                                 // limit acceleration.
     public static final double WHEEL_LOCK_TIME_SEC = 10; // Hold time on motor brakes when disabled (seconds)
     public static final double CONTROL_LOOP_PERIOD_SEC = 0.13; // s, 20ms + 110ms spark max velocity lag
+    public static final double ROBOT_SQUARE_DIMENSIONS = Units.inchesToMeters(21.75);
 
     public static class Limelight {
         public static final boolean ENABLED = true;
@@ -60,20 +61,20 @@ public final class Constants {
         );
         public static final RobotConfig config = new RobotConfig(
                 ROBOT_MASS_KG,
-                5.0, // Robot MOI (kg*m^2) - Not super important
+                1/12 * ROBOT_MASS_KG * (Math.pow(ROBOT_SQUARE_DIMENSIONS, 2) + Math.pow(ROBOT_SQUARE_DIMENSIONS, 2)), // Robot MOI 1/12 (kg*m^2)
                 new ModuleConfig(
                         0.0508,
-                        3.0,
+                        4.473,
                         1.1,
                         DCMotor.getNEO(1).withReduction(6.75),
                         50.0,
                         1),
                 // Swerve Drive Module Locations
                 // should be in FL, FR, BL, BR order.
-                new Translation2d(0.267, 0.267), // FL
-                new Translation2d(0.267, -0.267), // FR
-                new Translation2d(-0.267, 0.267), // BL
-                new Translation2d(-0.267, -0.267) // BR
+                new Translation2d(0.2175, 0.2175), // FL
+                new Translation2d(0.2175, -0.2175), // FR
+                new Translation2d(-0.2175, 0.2175), // BL
+                new Translation2d(-0.2175, -0.2175) // BR
         );
     }
 
