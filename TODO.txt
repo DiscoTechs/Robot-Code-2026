@@ -1,2 +1,0 @@
-C:\Users\Public\Documents\FRC
-C:\\Users\\Public\\wpilib\\2026\\tools\\Elastic.exe
