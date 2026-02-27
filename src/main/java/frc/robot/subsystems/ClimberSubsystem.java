@@ -11,8 +11,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 import yams.gearing.GearBox;
@@ -30,6 +31,9 @@ public class ClimberSubsystem extends SubsystemBase {
     private SmartMotorController smctl;
     private Elevator elevator;
     private TalonFX motor;
+
+    private final DigitalInput topLimit = new DigitalInput(0);
+    private final DigitalInput bottomLimit = new DigitalInput(1);
 
     public ClimberSubsystem() {
         SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
@@ -57,19 +61,27 @@ public class ClimberSubsystem extends SubsystemBase {
                         .withTelemetry("Climber", TelemetryVerbosity.HIGH));
     }
 
-    public Command moveTo(Distance height) {
-        return elevator.setHeight(height);
-    }
-
     public Command climbUp() {
-        return elevator.set(0.5);
+        if (topLimit.get()) {
+            return elevator.set(0);
+        }
+
+        return elevator.set(0.5)
+            .until(() -> topLimit.get())
+            .andThen(stop());
     }
 
     public Command climbDown() {
-        return elevator.set(-0.5);
+        if (bottomLimit.get()) {
+            return elevator.set(0);
+        }
+
+        return elevator.set(-0.5)
+            .until(() -> bottomLimit.get())
+            .andThen(stop());
     }
 
-    public Command climbStop() {
+    public Command stop() {
         return elevator.set(0);
     }
 
