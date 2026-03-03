@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class OperatorSubsystem extends SubsystemBase {
@@ -14,16 +15,20 @@ public class OperatorSubsystem extends SubsystemBase {
     public final IndexerSubsystem indexer;
     public final ShooterSubsystem shooter;
     public final TurretSubsystem turret;
+    public final IntakePivotSubsystem intakepivot;
+    public final IntakeSubsystem intake;
 
     public AngularVelocity targetShooterSpeed = RPM.of(0);
     public final Trigger isShooterAtSpeed;
 
     public OperatorSubsystem(ClimberSubsystem climb, IndexerSubsystem ind, ShooterSubsystem shoot,
-            TurretSubsystem turr) {
+            TurretSubsystem turr, IntakePivotSubsystem intPiv, IntakeSubsystem intake) {
         this.climber = climb;
         this.shooter = shoot;
         this.indexer = ind;
         this.turret = turr;
+        this.intakepivot = intPiv;
+        this.intake = intake;
 
         this.isShooterAtSpeed = new Trigger(
                 () -> Math.abs(shooter.getSpeed().in(RPM) - targetShooterSpeed.in(RPM)) < RPM.of(100).in(RPM));
@@ -31,14 +36,14 @@ public class OperatorSubsystem extends SubsystemBase {
 
     public Command intakeAll() {
         return Commands.parallel(
-                indexer.forward().asProxy(),
+                (new WaitCommand(0.5).andThen(indexer::forward)).asProxy(),
                 shooter.forward().asProxy());
     }
 
     public Command outtakeAll() {
         return Commands.parallel(
                 indexer.reverse().asProxy(),
-                shooter.forward().asProxy());
+                shooter.reverse().asProxy());
     }
 
     public Command stopAll() {

@@ -116,7 +116,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // periodically when they are not moving.
 
     // swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used
-    // over the internal encoder and push the offsets onto it. Throws warning if not
+    // over the internal encoder and push the offset s onto it. Throws warning if not
     // possible
 
     // PathPlanner
@@ -151,7 +151,7 @@ public class SwerveSubsystem extends SubsystemBase {
           .withImuMode(ImuMode.InternalImuMT1Assist)
           .withImuAssistAlpha(0.01)
           .withRobotOrientation(new Orientation3d(
-              swerveDrive.getGyro().getRotation3d(),
+              swerveDrive.getGyro().getRotation3d().plus(new Rotation3d(0, 0, 90)),
               new AngularVelocity3d(
                   DegreesPerSecond.of(0),
                   DegreesPerSecond.of(0),

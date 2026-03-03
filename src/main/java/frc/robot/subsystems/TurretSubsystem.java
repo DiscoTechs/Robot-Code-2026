@@ -4,17 +4,28 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
+import limelight.Limelight;
+import limelight.networktables.AngularVelocity3d;
+import limelight.networktables.LimelightPoseEstimator.EstimationMode;
+import limelight.networktables.LimelightSettings.ImuMode;
+import limelight.networktables.LimelightSettings.LEDMode;
+import limelight.networktables.Orientation3d;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
@@ -27,9 +38,11 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class TurretSubsystem extends SubsystemBase {
-    private SmartMotorController smctl;
-    private TalonFX motor;
-    private Pivot turret;
+    private final SmartMotorController smctl;
+    private final Pivot turret;
+
+    private final DutyCycleEncoder abEncoder;
+    private Limelight limelight;
 
     public TurretSubsystem() {
         SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
@@ -43,15 +56,24 @@ public class TurretSubsystem extends SubsystemBase {
             .withOpenLoopRampRate(Seconds.of(0.25))
             .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH);
 
-        this.motor = new TalonFX(TurretConstants.TURRET_MOTOR_CAN_ID);
-        this.smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);
-        this.turret = new Pivot(
+        // limelight = new Limelight("limelight2");
+        abEncoder = new DutyCycleEncoder(0); // TODO: Set Absolute Encoder ID
+        smctl = new TalonFXWrapper(new TalonFX(TurretConstants.TURRET_MOTOR_CAN_ID), DCMotor.getKrakenX60(1), config);
+        turret = new Pivot(
             new PivotConfig(smctl)
-                .withStartingPosition(Degrees.of(0)) // TODO: Use absolute encoder get degrees
-                .withWrapping(Degrees.of(0), Degrees.of(360))
-                .withSoftLimits(Degrees.of(-135), Degrees.of(135))
+                .withStartingPosition(Degrees.of(abEncoder.get() * 360))
+                .withSoftLimits(Degrees.of(-80), Degrees.of(80))
                 .withMOI(Meters.of(0.25), Pounds.of(4))
                 .withTelemetry("TurretPivot", TelemetryVerbosity.HIGH));
+
+    //   limelight.getSettings()
+    //       .withLimelightLEDMode(LEDMode.PipelineControl)
+    //       .withCameraOffset(new Pose3d(
+    //             Inches.of(0).in(Meters),
+    //             Inches.of(0).in(Meters),
+    //             Inches.of(0).in(Meters),
+    //             new Rotation3d(0, Degrees.of(0).in(Radians), Degrees.of(0).in(Radians))))
+    //       .save();
     }
 
     public Command setAngle(Angle angle) {

@@ -19,6 +19,10 @@ public class DriverInput {
         drivebase = ss;
     }
 
+    public void recordTelemetry() {
+        Logger.recordOutput("RobotPOV", robotRelative ? "Robot" : "Field");
+    }
+
     public void init() {
         SwerveInputStream driveAngularVelocity = SwerveInputStream
                 .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * -1, () -> controller.getLeftX() * -1)
@@ -28,7 +32,7 @@ public class DriverInput {
                 .robotRelative(() -> robotRelative)
                 .allianceRelativeControl(() -> !robotRelative);
 
-        Logger.recordOutput("RobotPOV", robotRelative ? "Robot" : "Field");
+        recordTelemetry();
         drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity));
 
         // if (RobotBase.isSimulation()) {
@@ -59,12 +63,12 @@ public class DriverInput {
             controller.start().onTrue(Commands.runOnce(drivebase::zeroGyro));
             controller.back().whileTrue(Commands.none());
 
+            // controller.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly())
+            controller.leftBumper().whileTrue(new DriveToTarget(drivebase));
             controller.rightBumper().onTrue(Commands.runOnce(() -> {
-                Logger.recordOutput("RobotPOV", robotRelative ? "Robot" : "Field");
+                recordTelemetry();
                 robotRelative = !robotRelative;
             }));
-            controller.leftBumper().whileTrue(new DriveToTarget(drivebase));
-            // controller.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
         }
     }
 }

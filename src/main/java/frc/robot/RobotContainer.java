@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
+import java.io.File;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import com.pathplanner.lib.auto.NamedCommands;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Distance;
@@ -17,18 +21,23 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.DriveToTarget;
 import frc.robot.commands.RotateCommand;
 import frc.robot.inputs.DriverInput;
+// import frc.robot.inputs.OperatorInput;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.IntakePivotSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.OperatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import swervelib.SwerveDrive;
-import java.io.File;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -40,12 +49,24 @@ import java.io.File;
  */
 public class RobotContainer {
     private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-    private final ClimberSubsystem climber = new ClimberSubsystem();
-    private final ShooterSubsystem shooter = new ShooterSubsystem();
-    private final IndexerSubsystem indexer = new IndexerSubsystem();
-    private final TurretSubsystem turret = new TurretSubsystem();
-    private final OperatorSubsystem operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter, turret);
+
+    private boolean CLIMBER_ENABLED = false;
+    private boolean SHOOTER_ENABLED = false;
+    private boolean INDEXER_ENABLED = false;
+    private boolean TURRET_ENABLED = false;
+    private boolean KICKER_ENABLED = false;
+    private boolean INTAKE_PIVOT_ENABLED = false;
+    private boolean INTAKE_ENABLED = false;
+
+    private final ClimberSubsystem climber = CLIMBER_ENABLED ? new ClimberSubsystem() : null;
+    private final ShooterSubsystem shooter = SHOOTER_ENABLED ? new ShooterSubsystem() : null;
+    private final IndexerSubsystem indexer = INDEXER_ENABLED ? new IndexerSubsystem() : null;
+    private final TurretSubsystem turret = TURRET_ENABLED ? new TurretSubsystem() : null;
+    private final KickerSubsystem kicker = KICKER_ENABLED ? new KickerSubsystem() : null;
+    private final IntakePivotSubsystem intakePivot = INTAKE_PIVOT_ENABLED ? new IntakePivotSubsystem () : null;
+    private final IntakeSubsystem intake = INTAKE_ENABLED ? new IntakeSubsystem() : null;
     
+    private final OperatorSubsystem operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter, turret, intakePivot, intake);
     // private final OperatorInput operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, drivebase, operatorSubsystem);
     private final DriverInput driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
 
@@ -69,7 +90,6 @@ public class RobotContainer {
                 drivebase.driveBackwards().withTimeout(1).withName("Auto.driveBackwards"));
         NamedCommands.registerCommand("driveForwards",
                 drivebase.driveForward().withTimeout(2).withName("Auto.driveForwards"));
-
         // climber.setDefaultCommand(climber.moveTo(Meters.of(0)));
 
         // Aliance
@@ -87,7 +107,25 @@ public class RobotContainer {
         if (autoChooser.get() != null) {
             RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
         }
+   
+        NamedCommands.registerCommand("driveToTarget", new DriveToTarget(drivebase));
+        // NamedCommands.registerCommand("shoot", Commands.parallel(
+        //     shooter.forward().asProxy(),
+        //     (new WaitCommand(0.5).andThen(kicker::forward)).asProxy(),
+        //     (new WaitCommand(0.5).andThen(indexer::forward)).asProxy(), new WaitCommand(3).andThen(indexer::stop).andThen(kicker::stop).andThen(shooter::stop)));   
+
+        // NamedCommands.registerCommand("climb", climber.climbDown()
+        //     .andThen(climber.climbUp().withTimeout(2)
+        //     .andThen(climber.climbDown())));
+        // NamedCommands.registerCommand("climbUp", climber.climbUp());
+        // NamedCommands.registerCommand("climbDown", climber.climbDown());
+
+        // NamedCommands.registerCommand("turretAngle0", turret.setAngle(Degrees.of(0)));
+        // NamedCommands.registerCommand("turretAngle45", turret.setAngle(Degrees.of(45)));
+        // NamedCommands.registerCommand("turretAngle90", turret.setAngle(Degrees.of(90)));
     }
+
+
 
     public Command getAutonomousCommand() {
         return autoChooser.get();

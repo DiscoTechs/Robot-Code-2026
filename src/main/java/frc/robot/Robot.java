@@ -39,7 +39,7 @@ public class Robot extends LoggedRobot {
 
     // controller.y().whileTrue(climber.climbUp());
     // controller.a().whileTrue(climber.climbDown());
-    // controller.x().whileTrue(climber.climbStop());
+    // controller.x().whileTrue(climber.stop());
 
     // controller.rightTrigger().onTrue(shooter.forward());
     // controller.rightTrigger().onFalse(shooter.stop());

@@ -7,15 +7,22 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.commands.DriveToTarget;
+import limelight.networktables.LimelightPoseEstimator.EstimationMode;
+import limelight.networktables.PoseEstimate;
+import limelight.results.RawFiducial;
+import swervelib.SwerveDrive;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.ElevatorConfig;
@@ -28,12 +35,11 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ClimberSubsystem extends SubsystemBase {
-    private SmartMotorController smctl;
-    private Elevator elevator;
-    private TalonFX motor;
+    private final SmartMotorController smctl;
+    private final Elevator elevator;
 
-    private final DigitalInput topLimit = new DigitalInput(0);
-    private final DigitalInput bottomLimit = new DigitalInput(1);
+    private final DigitalInput topLimit;
+    private final DigitalInput bottomLimit;
 
     public ClimberSubsystem() {
         SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
@@ -50,9 +56,11 @@ public class ClimberSubsystem extends SubsystemBase {
                 .withOpenLoopRampRate(Seconds.of(0.25))
                 .withClosedLoopRampRate(Seconds.of(0.25))
                 .withTelemetry("ClimberMotor", TelemetryVerbosity.HIGH);
+        
+        topLimit = new DigitalInput(0); // TODO: Set top limit switch channel
+        bottomLimit = new DigitalInput(1); // TODO: Set top limit switch channel
 
-        this.motor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID);
-        this.smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);
+        this.smctl = new TalonFXWrapper(new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID), DCMotor.getKrakenX60(1), config);
         this.elevator = new Elevator(
                 new ElevatorConfig(smctl)
                         .withMass(ClimberConstants.MASS)

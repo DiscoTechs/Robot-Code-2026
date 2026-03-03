@@ -45,7 +45,7 @@ public final class Constants {
     public static final double ROBOT_SQUARE_DIMENSIONS = Units.inchesToMeters(21.75);
 
     public static class Limelight {
-        public static final boolean ENABLED = true;
+        public static final boolean ENABLED = false;
         public static final Pose3d ROBOT_TO_CAMERA_POSE = new Pose3d(
                 Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),
@@ -81,7 +81,11 @@ public final class Constants {
     public static class OperatorConstants {
         public static final int OPERATOR_CONTROLLER_PORT = 0;
         public static final int DRIVER_CONTROLLER_PORT = 0;
+        // Multiplier for all joystick values
+        // Smaller value sets lower max speed
         public static final double TRANSLATION_SCALE = 0.8;
+        // ignores values until they hit this threshold
+        // makes robot less sensitive to joystick movement
         public static final double JOYSTICK_DEADBAND = 0.1; // Joystick Deadband
     }
 
@@ -92,7 +96,7 @@ public final class Constants {
     }
 
     public static class ShooterConstants {
-        public static final int SHOOTER_MOTOR_CAN_ID = 8; // make 2 for actual robot
+        public static final int SHOOTER_MOTOR_CAN_ID = 2; // make 2 for actual robot
     }
 
     public static class TurretConstants {
@@ -100,6 +104,14 @@ public final class Constants {
     }
 
     public static class IndexerConstants {
-        public static final int INDEXER_MOTOR_CAN_ID = 0; // Unknown motor ID, placeholder value
+        public static final int INDEXER_MOTOR_CAN_ID = 6; 
+    }
+    public static class IntakeConstants{
+        public static final int INTAKE_PIVOT_CAN_ID = 7;
+        public static final int INTAKE_CAN_ID = 8; // change later mabye
+    }
+    public static class KickerConstants{
+        public static final int KICKER_CAN_ID = 4;
+        
     }
 }
