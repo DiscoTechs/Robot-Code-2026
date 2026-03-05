@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.OperatorSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -42,20 +43,14 @@ public class OperatorInput {
         }
 
         if (operator.turret != null) {
-            controller.leftStick().onChange(Commands.runOnce(() -> {
-                // TODO: PLEASE JAKE ADD SOME FUCKING SAFEGAURDS
-
+            operator.turret.setDefaultCommand(new RunCommand(() -> {
                 double leftAxis = controller.getLeftX();
-                if (-0.1 < leftAxis && leftAxis < 0.1) {
+                if (Math.abs(leftAxis) < 0.1) {
                     operator.turret.set(0);
-                } else if (leftAxis > 0) {
-                    // GO RIGHT
-                    operator.turret.set(0.5);
-                } else if (leftAxis < 0) {
-                    // GO LEFT
-                    operator.turret.set(-0.5);
+                } else {
+                    operator.turret.set(leftAxis * 0.5);
                 }
-            }));
+            }, operator.turret));
         }
 
         if (operator.intakepivot != null) {

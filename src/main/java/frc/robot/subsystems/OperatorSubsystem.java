@@ -17,18 +17,20 @@ public class OperatorSubsystem extends SubsystemBase {
     public final TurretSubsystem turret;
     public final IntakePivotSubsystem intakepivot;
     public final IntakeSubsystem intake;
+    public final KickerSubsystem kicker;
 
     public AngularVelocity targetShooterSpeed = RPM.of(0);
     public final Trigger isShooterAtSpeed;
 
     public OperatorSubsystem(ClimberSubsystem climb, IndexerSubsystem ind, ShooterSubsystem shoot,
-            TurretSubsystem turr, IntakePivotSubsystem intPiv, IntakeSubsystem intake) {
+            TurretSubsystem turr, IntakePivotSubsystem intPiv, IntakeSubsystem intake, KickerSubsystem kick) {
         this.climber = climb;
         this.shooter = shoot;
         this.indexer = ind;
         this.turret = turr;
         this.intakepivot = intPiv;
         this.intake = intake;
+        this.kicker = kick;
 
         this.isShooterAtSpeed = new Trigger(
                 () -> Math.abs(shooter.getSpeed().in(RPM) - targetShooterSpeed.in(RPM)) < RPM.of(100).in(RPM));
@@ -54,8 +56,6 @@ public class OperatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // System.out.println("Shooter: " + isShooterAtSpeed.getAsBoolean() + " (" +
-        // Math.round(shooter.getSpeed().in(RPM)) + "/" +
-        // Math.round(targetShooterSpeed.in(RPM)) + " RPM)");
+        System.out.println("Shooter: " + isShooterAtSpeed.getAsBoolean() + " (" + Math.round(shooter.getSpeed().in(RPM)) + "/" + Math.round(targetShooterSpeed.in(RPM)) + " RPM)");
     }
 }

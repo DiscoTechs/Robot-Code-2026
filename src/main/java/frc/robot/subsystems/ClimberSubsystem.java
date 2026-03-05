@@ -58,7 +58,7 @@ public class ClimberSubsystem extends SubsystemBase {
                 .withTelemetry("ClimberMotor", TelemetryVerbosity.HIGH);
         
         topLimit = new DigitalInput(0); // TODO: Set top limit switch channel
-        bottomLimit = new DigitalInput(1); // TODO: Set top limit switch channel
+        bottomLimit = new DigitalInput(1); // TODO: Set bottom limit switch channel
 
         this.smctl = new TalonFXWrapper(new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID), DCMotor.getKrakenX60(1), config);
         this.elevator = new Elevator(
