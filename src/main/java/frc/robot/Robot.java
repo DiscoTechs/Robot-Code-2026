@@ -41,12 +41,6 @@ public class Robot extends LoggedRobot {
     // controller.a().whileTrue(climber.climbDown());
     // controller.x().whileTrue(climber.stop());
 
-    // controller.rightTrigger().onTrue(shooter.forward());
-    // controller.rightTrigger().onFalse(shooter.stop());
-
-    // controller.leftTrigger().onTrue(Commands.runOnce(() -> shooter.reverse()));
-    // controller.leftTrigger().onFalse(Commands.runOnce(() -> shooter.stop()));
-
     // Init Robot
     disabledTimer = new Timer(); // Create a timer to disable motor brake a few seconds after disable
     m_robotContainer = new RobotContainer();
@@ -72,13 +66,13 @@ public class Robot extends LoggedRobot {
       Logger.recordOutput("FieldSimulation/FuelPoses", fuelPoses);
     }
 
-    Logger.recordOutput("FieldSimulation/RobotPose", m_robotContainer.getRobotPose());
-    Logger.recordOutput("FieldSimulation/TargetPose", m_robotContainer.getSwerveDrive().field.getObject("targetPose").getPose());
+    // Logger.recordOutput("FieldSimulation/RobotPose", m_robotContainer.getRobotPose());
+    // Logger.recordOutput("FieldSimulation/TargetPose", m_robotContainer.getSwerveDrive().field.getObject("targetPose").getPose());
   }
 
   @Override
   public void disabledInit() {
-    m_robotContainer.setMotorBrake(true);
+    // m_robotContainer.setMotorBrake(true);
     disabledTimer.reset();
     disabledTimer.start();
   }
@@ -86,7 +80,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     if (disabledTimer.hasElapsed(Constants.WHEEL_LOCK_TIME_SEC)) {
-      m_robotContainer.setMotorBrake(false);
+    //   m_robotContainer.setMotorBrake(false);
       disabledTimer.stop();
       disabledTimer.reset();
     }
@@ -94,7 +88,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    m_robotContainer.setMotorBrake(true);
+    // m_robotContainer.setMotorBrake(true);
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     if (m_autonomousCommand != null) {
@@ -134,7 +128,7 @@ public class Robot extends LoggedRobot {
     // SimulatedArena.overrideInstance(new Arena2026Rebuilt());
 
     arena = SimulatedArena.getInstance();
-    arena.addDriveTrainSimulation(m_robotContainer.getSwerveDrive().getMapleSimDrive().get());
+    // arena.addDriveTrainSimulation(m_robotContainer.getSwerveDrive().getMapleSimDrive().get());
   }
 
   @Override

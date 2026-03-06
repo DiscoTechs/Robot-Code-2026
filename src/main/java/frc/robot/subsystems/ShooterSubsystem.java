@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -27,18 +28,20 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class ShooterSubsystem extends SubsystemBase {
     private final SmartMotorController smctl;
     private final FlyWheel shooter;
+    private final TalonFX motor;
 
     public ShooterSubsystem() {
         SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
-            // .withGearing(new MechanismGearing(GearBox.fromReductionStages(4)))
+            .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
             .withStatorCurrentLimit(Amps.of(40))
             .withMotorInverted(true)
             .withIdleMode(MotorMode.COAST)
             .withControlMode(ControlMode.CLOSED_LOOP)
-            .withClosedLoopController(0.01, 0.0, 0.0, RPM.of(6000), RotationsPerSecondPerSecond.of(2500))
+            .withClosedLoopController(0.01, 0.0, 0.0, RPM.of(6000), RotationsPerSecondPerSecond.of(4500))
             .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
 
-        smctl = new TalonFXWrapper(new TalonFX(ShooterConstants.SHOOTER_MOTOR_CAN_ID), DCMotor.getKrakenX60(1), config);
+        motor = new TalonFX(ShooterConstants.SHOOTER_MOTOR_CAN_ID, new CANBus("CANivore 1"));
+        smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);
         shooter = new FlyWheel(
                 new FlyWheelConfig(smctl)
                         .withDiameter(Inches.of(1.5))
@@ -52,7 +55,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command forward() {
-        return shooter.set(0.5);
+        return shooter.set(1);
     }
 
     public Command reverse() {

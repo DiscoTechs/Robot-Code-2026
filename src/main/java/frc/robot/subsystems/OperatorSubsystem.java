@@ -19,7 +19,7 @@ public class OperatorSubsystem extends SubsystemBase {
     public final IntakeSubsystem intake;
     public final KickerSubsystem kicker;
 
-    public AngularVelocity targetShooterSpeed = RPM.of(0);
+    public AngularVelocity targetShooterSpeed = RPM.of(6000);
     public final Trigger isShooterAtSpeed;
 
     public OperatorSubsystem(ClimberSubsystem climb, IndexerSubsystem ind, ShooterSubsystem shoot,
@@ -38,24 +38,31 @@ public class OperatorSubsystem extends SubsystemBase {
 
     public Command intakeAll() {
         return Commands.parallel(
-                (new WaitCommand(0.5).andThen(indexer::forward)).asProxy(),
-                shooter.forward().asProxy());
+            shooter.forward().asProxy(),
+            kicker.forward().asProxy()
+            // (new WaitCommand(0.5).andThen()).asProxy()
+            // (new WaitCommand(0.5).andThen(indexer::forward)).asProxy()
+        );
     }
 
     public Command outtakeAll() {
         return Commands.parallel(
-                indexer.reverse().asProxy(),
-                shooter.reverse().asProxy());
+                indexer.reverse().asProxy()
+        // shooter.reverse().asProxy()
+        );
     }
 
     public Command stopAll() {
         return Commands.parallel(
-                indexer.stop().asProxy(),
-                shooter.stop().asProxy());
+                // indexer.stop().asProxy()
+                shooter.stop().asProxy(),
+                kicker.stop().asProxy()
+        );
     }
 
     @Override
     public void periodic() {
-        System.out.println("Shooter: " + isShooterAtSpeed.getAsBoolean() + " (" + Math.round(shooter.getSpeed().in(RPM)) + "/" + Math.round(targetShooterSpeed.in(RPM)) + " RPM)");
+        // System.out.println("Shooter: " + isShooterAtSpeed.getAsBoolean() + " (" + Math.round(shooter.getSpeed().in(RPM))
+        //         + "/" + Math.round(targetShooterSpeed.in(RPM)) + " RPM)");
     }
 }

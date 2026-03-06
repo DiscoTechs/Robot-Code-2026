@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 import java.util.ArrayList;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -42,28 +43,29 @@ public class KickerSubsystem extends SubsystemBase {
     private final double DEFAULT_SPEED = 0.85;
 
     public KickerSubsystem() {
-        SmartMotorControllerConfig config = new SmartMotorControllerConfig()
+        SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
             .withGearing(new MechanismGearing(GearBox.fromReductionStages(4)))
             .withStatorCurrentLimit(Amps.of(20))
             .withMotorInverted(false)
             .withControlMode(ControlMode.OPEN_LOOP)
-            .withIdleMode(MotorMode.BRAKE)
+            .withIdleMode(MotorMode.COAST)
             .withTelemetry("KickerMotor", TelemetryVerbosity.HIGH);
 
-        this.smctl = new TalonFXWrapper(new TalonFX(KickerConstants.KICKER_CAN_ID), DCMotor.getKrakenX60(1), config);
+        this.smctl = new TalonFXWrapper(new TalonFX(KickerConstants.KICKER_CAN_ID, new CANBus("CANivore 1")), DCMotor.getKrakenX60(1), config);
         this.kicker = new FlyWheel(new FlyWheelConfig(smctl)
             .withDiameter(Inches.of(1.5))
             .withMass(Pounds.of(0.2))
-            .withSoftLimit(RPM.of(-6000), RPM.of(6000))
+            // .withSoftLimit(RPM.of(-6000), RPM.of(6000))
             .withTelemetry("KickerWheel", TelemetryVerbosity.HIGH));
     }
 
     public Command forward() {
-        return kicker.set(DEFAULT_SPEED);
+        System.out.println("FORWARD KICKER");
+        return kicker.set(-DEFAULT_SPEED);
     }
 
     public Command reverse() {
-        return kicker.set(-DEFAULT_SPEED);
+        return kicker.set(DEFAULT_SPEED);
     }
 
     public Command setSpeed(double speed) {

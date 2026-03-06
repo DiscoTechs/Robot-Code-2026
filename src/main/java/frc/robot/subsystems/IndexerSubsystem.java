@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,7 +41,7 @@ public class IndexerSubsystem extends SubsystemBase {
             .withIdleMode(MotorMode.BRAKE)
             .withTelemetry("IndexerMotor", TelemetryVerbosity.HIGH);
 
-        this.smctl = new TalonFXWrapper(new TalonFX(IndexerConstants.INDEXER_MOTOR_CAN_ID), DCMotor.getKrakenX60(1), config);
+        this.smctl = new TalonFXWrapper(new TalonFX(IndexerConstants.INDEXER_MOTOR_CAN_ID, new CANBus("CANivore 1")), DCMotor.getKrakenX60(1), config);
         this.indexer = new FlyWheel(new FlyWheelConfig(smctl)
             .withDiameter(Inches.of(1.5))
             .withMass(Pounds.of(0.2))

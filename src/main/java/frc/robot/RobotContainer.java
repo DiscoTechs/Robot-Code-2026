@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveToTarget;
 import frc.robot.commands.RotateCommand;
 import frc.robot.inputs.DriverInput;
+import frc.robot.inputs.OperatorInput;
 // import frc.robot.inputs.OperatorInput;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -50,11 +51,11 @@ import swervelib.SwerveDrive;
 public class RobotContainer {
     private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
-    private boolean CLIMBER_ENABLED = false;
-    private boolean SHOOTER_ENABLED = false;
+    private boolean CLIMBER_ENABLED = true;
+    private boolean SHOOTER_ENABLED = true;
     private boolean INDEXER_ENABLED = false;
-    private boolean TURRET_ENABLED = false;
-    private boolean KICKER_ENABLED = false;
+    private boolean TURRET_ENABLED = true;
+    private boolean KICKER_ENABLED = true;
     private boolean INTAKE_PIVOT_ENABLED = false;
     private boolean INTAKE_ENABLED = false;
 
@@ -66,12 +67,12 @@ public class RobotContainer {
     private final IntakePivotSubsystem intakePivot = INTAKE_PIVOT_ENABLED ? new IntakePivotSubsystem () : null;
     private final IntakeSubsystem intake = INTAKE_ENABLED ? new IntakeSubsystem() : null;
     
-    private final OperatorSubsystem operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter, turret, intakePivot, intake);
-    // private final OperatorInput operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, drivebase, operatorSubsystem);
+    private final OperatorSubsystem operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter, turret, intakePivot, intake, kicker);
+    private final OperatorInput operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, operatorSubsystem);
     private final DriverInput driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
 
     private final LoggedDashboardChooser<Command> autoChooser;
-    private Alliance currentAlliance = Alliance.Red;
+    // private Alliance currentAlliance = Alliance.Red;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -83,19 +84,19 @@ public class RobotContainer {
 
         // Setup Inputs
         driverInput.init(); // Configure our controller to send input to swervedrive
-        // operatorInput.init(); // Configure our controller to send input to operator subsystems
+        operatorInput.init(); // Configure our controller to send input to operator subsystems
 
         // Register Commands
         NamedCommands.registerCommand("driveBackwards",
                 drivebase.driveBackwards().withTimeout(1).withName("Auto.driveBackwards"));
         NamedCommands.registerCommand("driveForwards",
                 drivebase.driveForward().withTimeout(2).withName("Auto.driveForwards"));
-        // climber.setDefaultCommand(climber.moveTo(Meters.of(0)));
+        // climber.setDefaultCommand(climber.climbUp());
 
         // Aliance
-        onAllianceChanged(getAlliance());
-        new Trigger(() -> getAlliance() != currentAlliance)
-                .onTrue(Commands.runOnce(() -> onAllianceChanged(getAlliance())).ignoringDisable(true));
+        // onAllianceChanged(getAlliance());
+        // new Trigger(() -> getAlliance() != currentAlliance)
+        //         .onTrue(Commands.runOnce(() -> onAllianceChanged(getAlliance())).ignoringDisable(true));
 
         // Setup Auto
         autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
@@ -108,24 +109,23 @@ public class RobotContainer {
             RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
         }
    
-        NamedCommands.registerCommand("driveToTarget", new DriveToTarget(drivebase));
+        int[] tags = { 16, 32 };
+        NamedCommands.registerCommand("climbDriveToTarget", new DriveToTarget(drivebase, tags));
         // NamedCommands.registerCommand("shoot", Commands.parallel(
         //     shooter.forward().asProxy(),
         //     (new WaitCommand(0.5).andThen(kicker::forward)).asProxy(),
         //     (new WaitCommand(0.5).andThen(indexer::forward)).asProxy(), new WaitCommand(3).andThen(indexer::stop).andThen(kicker::stop).andThen(shooter::stop)));   
 
-        // NamedCommands.registerCommand("climb", climber.climbDown()
-        //     .andThen(climber.climbUp().withTimeout(2)
-        //     .andThen(climber.climbDown())));
-        // NamedCommands.registerCommand("climbUp", climber.climbUp());
-        // NamedCommands.registerCommand("climbDown", climber.climbDown());
+        NamedCommands.registerCommand("climb", climber.climbDown()
+            .andThen(climber.climbUp().withTimeout(2)
+            .andThen(climber.climbDown())));
+        NamedCommands.registerCommand("climbUp", climber.climbUp());
+        NamedCommands.registerCommand("climbDown", climber.climbDown());
 
         // NamedCommands.registerCommand("turretAngle0", turret.setAngle(Degrees.of(0)));
         // NamedCommands.registerCommand("turretAngle45", turret.setAngle(Degrees.of(45)));
         // NamedCommands.registerCommand("turretAngle90", turret.setAngle(Degrees.of(90)));
     }
-
-
 
     public Command getAutonomousCommand() {
         return autoChooser.get();
@@ -148,35 +148,35 @@ public class RobotContainer {
         return DriverStation.getAlliance().orElse(Alliance.Red);
     }
 
-    private boolean isInAllianceZone() {
-        Alliance alliance = getAlliance();
-        Distance blueZone = Inches.of(182);
-        Distance redZone = Inches.of(469);
+    // private boolean isInAllianceZone() {
+    //     Alliance alliance = getAlliance();
+    //     Distance blueZone = Inches.of(182);
+    //     Distance redZone = Inches.of(469);
 
-        if (alliance == Alliance.Blue && drivebase.getPose().getMeasureX().lt(blueZone)) {
-            return true;
-        } else if (alliance == Alliance.Red && drivebase.getPose().getMeasureX().gt(redZone)) {
-            return true;
-        }
+    //     if (alliance == Alliance.Blue && drivebase.getPose().getMeasureX().lt(blueZone)) {
+    //         return true;
+    //     } else if (alliance == Alliance.Red && drivebase.getPose().getMeasureX().gt(redZone)) {
+    //         return true;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    private boolean isOnAllianceOutpostSide() {
-        Alliance alliance = getAlliance();
-        Distance midLine = Inches.of(158.84375);
+    // private boolean isOnAllianceOutpostSide() {
+    //     Alliance alliance = getAlliance();
+    //     Distance midLine = Inches.of(158.84375);
 
-        if (alliance == Alliance.Blue && drivebase.getPose().getMeasureY().lt(midLine)) {
-            return true;
-        } else if (alliance == Alliance.Red && drivebase.getPose().getMeasureY().gt(midLine)) {
-            return true;
-        }
+    //     if (alliance == Alliance.Blue && drivebase.getPose().getMeasureY().lt(midLine)) {
+    //         return true;
+    //     } else if (alliance == Alliance.Red && drivebase.getPose().getMeasureY().gt(midLine)) {
+    //         return true;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    private void onAllianceChanged(Alliance alliance) {
-        currentAlliance = alliance;
-        System.out.println("Alliance changed to: " + alliance);
-    }
+    // private void onAllianceChanged(Alliance alliance) {
+    //     currentAlliance = alliance;
+    //     System.out.println("Alliance changed to: " + alliance);
+    // }
 }

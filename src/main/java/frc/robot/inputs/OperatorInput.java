@@ -1,23 +1,17 @@
 package frc.robot.inputs;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
-import static edu.wpi.first.units.Units.Degrees;
-
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import static edu.wpi.first.units.Units.Degrees;
 import frc.robot.subsystems.OperatorSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
 
 public class OperatorInput {
     public static CommandXboxController controller;
     private OperatorSubsystem operator;
-    private SwerveSubsystem drivebase;
 
-    public OperatorInput(int ctlrPort, SwerveSubsystem ss, OperatorSubsystem os) {
+    public OperatorInput(int ctlrPort, OperatorSubsystem os) {
         controller = new CommandXboxController(ctlrPort);
-        drivebase = ss;
         operator = os;
     }
 
@@ -34,11 +28,11 @@ public class OperatorInput {
 
         if (operator.climber != null) {
             controller.povUp()
-                    .whileTrue(operator.climber.climbUp())
-                    .onFalse(operator.climber.stop());
-
-            controller.povDown()
                     .whileTrue(operator.climber.climbDown())
+                    .onFalse(operator.climber.stop());
+//climber up and down are inverted 
+            controller.povDown()
+                    .whileTrue(operator.climber.climbUp())
                     .onFalse(operator.climber.stop());
         }
 
@@ -46,12 +40,18 @@ public class OperatorInput {
             operator.turret.setDefaultCommand(new RunCommand(() -> {
                 double leftAxis = controller.getLeftX();
                 if (Math.abs(leftAxis) < 0.1) {
-                    operator.turret.set(0);
+                    operator.turret.set(0).execute();
                 } else {
-                    operator.turret.set(leftAxis * 0.5);
+                    operator.turret.set(leftAxis * 0.5).execute();
                 }
             }, operator.turret));
         }
+
+        controller.rightTrigger().onTrue(operator.intakeAll());
+        controller.rightTrigger().onFalse(operator.stopAll());
+
+        // controller.leftTrigger().onTrue(Commands.runOnce(() -> operator.shooter.reverse()));
+        // controller.leftTrigger().onFalse(Commands.runOnce(() -> operator.shooter.stop()));
 
         if (operator.intakepivot != null) {
             controller.y()

@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.Optional;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -17,6 +18,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.commands.DriveToTarget;
 import limelight.networktables.LimelightPoseEstimator.EstimationMode;
@@ -57,10 +59,10 @@ public class ClimberSubsystem extends SubsystemBase {
                 .withClosedLoopRampRate(Seconds.of(0.25))
                 .withTelemetry("ClimberMotor", TelemetryVerbosity.HIGH);
         
-        topLimit = new DigitalInput(0); // TODO: Set top limit switch channel
-        bottomLimit = new DigitalInput(1); // TODO: Set bottom limit switch channel
+        topLimit = new DigitalInput(0); 
+        bottomLimit = new DigitalInput(1); 
 
-        this.smctl = new TalonFXWrapper(new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID), DCMotor.getKrakenX60(1), config);
+        this.smctl = new TalonFXWrapper(new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID, new CANBus("CANivore 1")), DCMotor.getKrakenX60(1), config);
         this.elevator = new Elevator(
                 new ElevatorConfig(smctl)
                         .withMass(ClimberConstants.MASS)
@@ -70,22 +72,14 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     public Command climbUp() {
-        if (topLimit.get()) {
-            return elevator.set(0);
-        }
-
         return elevator.set(0.5)
-            .until(() -> topLimit.get())
+            .until(() -> !bottomLimit.get())
             .andThen(stop());
     }
 
     public Command climbDown() {
-        if (bottomLimit.get()) {
-            return elevator.set(0);
-        }
-
         return elevator.set(-0.5)
-            .until(() -> bottomLimit.get())
+            .until(() -> !topLimit.get()) //figure out how to zero 
             .andThen(stop());
     }
 

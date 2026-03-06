@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 import java.util.ArrayList;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -49,10 +50,10 @@ public class IntakePivotSubsystem extends SubsystemBase {
                 .withTelemetry("IntakePivotMotor", TelemetryVerbosity.HIGH);
 
         abEncoder = new AnalogInput(8); // TODO: Set Absolute Encoder ID
-        smctl = new TalonFXWrapper(new TalonFX(IntakeConstants.INTAKE_PIVOT_CAN_ID), DCMotor.getKrakenX60(1), config);
+        smctl = new TalonFXWrapper(new TalonFX(IntakeConstants.INTAKE_PIVOT_CAN_ID, new CANBus("CANivore 1")), DCMotor.getKrakenX60(1), config);
         intakepivot = new Pivot(
                 new PivotConfig(smctl)
-                        .withStartingPosition(Degrees.of(abEncoder.getValue()))
+                        .withStartingPosition(Degrees.of(abEncoder.getValue() * 360))
                         .withWrapping(Degrees.of(0), Degrees.of(360))
                         .withSoftLimits(Degrees.of(-45), Degrees.of(45))
                         .withMOI(Meters.of(0.25), Pounds.of(4))
