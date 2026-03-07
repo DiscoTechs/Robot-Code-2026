@@ -60,7 +60,6 @@ public class KickerSubsystem extends SubsystemBase {
     }
 
     public Command forward() {
-        System.out.println("FORWARD KICKER");
         return kicker.set(-DEFAULT_SPEED);
     }
 

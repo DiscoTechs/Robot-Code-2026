@@ -66,6 +66,10 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooter.set(0);
     }
 
+    public Command set(double speed) {
+        return shooter.set(speed);
+    }
+
     public AngularVelocity getSpeed() {
         return shooter.getSpeed();
     }
