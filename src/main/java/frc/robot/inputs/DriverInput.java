@@ -14,18 +14,6 @@ public class DriverInput {
     private SwerveSubsystem drivebase;
     private boolean robotRelative = false;
 
-    SwerveInputStream driveAngularVelocity = SwerveInputStream
-        .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * -1, () -> controller.getLeftX() * -1)
-        .withControllerRotationAxis(() -> -controller.getRightX())
-        .deadband(OperatorConstants.JOYSTICK_DEADBAND)
-        .scaleTranslation(OperatorConstants.TRANSLATION_SCALE)
-        .robotRelative(false)
-        .allianceRelativeControl(true);
-    
-    SwerveInputStream driveAngularVelocityRobotRelative = driveAngularVelocity
-        .robotRelative(true)
-        .allianceRelativeControl(false);
-
     public DriverInput(int ctlrPort, SwerveSubsystem ss) {
         controller = new CommandXboxController(ctlrPort);
         drivebase = ss;
