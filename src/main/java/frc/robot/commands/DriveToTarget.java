@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
@@ -12,14 +13,24 @@ import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import limelight.results.RawFiducial;
 import limelight.networktables.PoseEstimate;
 
-// TODO: Verify that this code works
 public class DriveToTarget extends Command {
     private final PIDController turnPID = new PIDController(0.03, 0, 0.001);
+    private final ArrayList<Integer> tags = new ArrayList<Integer>();
     private final SwerveSubsystem drivetrain;
     private double lastDistance = 10;
 
     public DriveToTarget(SwerveSubsystem dt) {
         this.drivetrain = dt;
+
+        addRequirements(dt);
+    }
+
+    public DriveToTarget(SwerveSubsystem dt, int[] tagsRequired) {
+        this.drivetrain = dt;
+
+        for (int t : tagsRequired) {
+            this.tags.add(t);
+        }
 
         addRequirements(dt);
     }
@@ -33,9 +44,23 @@ public class DriveToTarget extends Command {
         Optional<PoseEstimate> visionEstimate = drivetrain.getLimelight().createPoseEstimator(EstimationMode.MEGATAG2).getPoseEstimate();
         visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
             if (poseEstimate.tagCount > 0) {
-                RawFiducial tag = poseEstimate.rawFiducials[0];
-                lastDistance = tag.distToCamera;
+                RawFiducial tag = null;
+                if (this.tags.size() == 0) {
+                    tag = poseEstimate.rawFiducials[0];
+                } else {
+                    for (RawFiducial t : poseEstimate.rawFiducials) {
+                        if (this.tags.contains(t.id)) {
+                            tag = t;
+                            break;
+                        }
+                    }
+                }
 
+                if (tag == null) {
+                    return;
+                }
+
+                lastDistance = tag.distToCamera;
                 double rotation = turnPID.calculate(tag.txnc, 0);
                 if (Math.abs(tag.txnc) < 1.0) {
                     rotation = 0;

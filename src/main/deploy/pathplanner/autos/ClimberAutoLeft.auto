@@ -5,27 +5,33 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "driveForwards"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "StartToShootLeft"
+            "pathName": "HubToClimber"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 2.0
+            "name": "climbDriveToTarget"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "climbDown"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "turretAngle90"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "climb"
           }
         }
       ]
