@@ -10,6 +10,8 @@ import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 import java.util.ArrayList;
 
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -41,11 +43,11 @@ public class IntakePivotSubsystem extends SubsystemBase {
     // private SmartMotorController smctl;
     // private Pivot intakepivot;
     // private AnalogInput abEncoder;
-    private Talon motor;
+    private TalonSRX motor;
 
     public IntakePivotSubsystem() {
     //    abEncoder = new AnalogInput(3); // TODO: Set Absolute Encoder ID
-        motor = new Talon(IntakeConstants.INTAKE_PIVOT_CAN_ID); 
+        motor = new TalonSRX(IntakeConstants.INTAKE_PIVOT_CAN_ID); 
 
         // SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
         //         .withGearing(new MechanismGearing(GearBox.fromReductionStages(100)))
@@ -72,15 +74,15 @@ public class IntakePivotSubsystem extends SubsystemBase {
     // }
 
     public void forward() {
-        motor.set(0.5);
+        motor.set(TalonSRXControlMode.PercentOutput, 0.5);
     }
 
     public void back() {
-        motor.set(-0.5);
+        motor.set(TalonSRXControlMode.PercentOutput, -0.5);
     }
 
     public void stop() {
-        motor.set(0);
+        motor.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
     // public void periodic(){

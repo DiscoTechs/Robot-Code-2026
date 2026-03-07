@@ -53,7 +53,7 @@ public class RobotContainer {
 
     private boolean CLIMBER_ENABLED = false;
     private boolean SHOOTER_ENABLED = true;
-    private boolean INDEXER_ENABLED = false;
+    private boolean INDEXER_ENABLED = true;
     // private boolean TURRET_ENABLED = false;
     private boolean KICKER_ENABLED = true;
     private boolean INTAKE_PIVOT_ENABLED = true;
