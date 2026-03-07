@@ -15,8 +15,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public Command forward() {
         return Commands.runOnce(() -> {
-            System.out.println("FORWARD");
-            m_motor.set(TalonSRXControlMode.PercentOutput, SPEED);
+            m_motor.set(TalonSRXControlMode.PercentOutput, -SPEED);
         });
     }
     
@@ -24,7 +23,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public Command reverse() {
         return Commands.runOnce(() -> {
             System.out.println("REVERSE");
-            m_motor.set(TalonSRXControlMode.PercentOutput, -SPEED);
+            m_motor.set(TalonSRXControlMode.PercentOutput, SPEED);
         });
     }
 

@@ -94,7 +94,7 @@ public class OperatorInput {
             controller.x()
                     .whileTrue(Commands.runOnce(() -> {
                         System.out.println("BACK");
-                        operator.intakepivot.reverse();
+                        operator.intakepivot.back();
                     }))
                     .onFalse(Commands.runOnce(() -> {
                         System.out.println("STOP");

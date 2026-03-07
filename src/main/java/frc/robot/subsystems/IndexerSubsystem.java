@@ -33,7 +33,7 @@ public class IndexerSubsystem extends SubsystemBase {
     private final double DEFAULT_SPEED = 0.85;
 
     public IndexerSubsystem() {
-        SmartMotorControllerConfig config = new SmartMotorControllerConfig()
+        SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
             .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
             .withStatorCurrentLimit(Amps.of(20))
             .withMotorInverted(false)
