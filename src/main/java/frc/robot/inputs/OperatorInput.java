@@ -27,11 +27,11 @@ public class OperatorInput {
         }
 
         if (operator.climber != null) {
-            controller.povUp()
+            controller.povDown()
                     .whileTrue(operator.climber.climbDown())
                     .onFalse(operator.climber.stop());
 //climber up and down are inverted 
-            controller.povDown()
+            controller.povUp()
                     .whileTrue(operator.climber.climbUp())
                     .onFalse(operator.climber.stop());
         }
@@ -57,6 +57,7 @@ public class OperatorInput {
             controller.y()
                     .whileTrue(operator.intakepivot.setAngle(Degrees.of(45)))
                     .onFalse(operator.intakepivot.stop());
+                   
 
             controller.x()
                     .whileTrue(operator.intakepivot.setAngle(Degrees.of(-45)))

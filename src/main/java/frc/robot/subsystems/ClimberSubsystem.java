@@ -1,30 +1,33 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Seconds;
-
-import java.util.Optional;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.commands.DriveToTarget;
+import limelight.Limelight;
+import limelight.networktables.AngularVelocity3d;
 import limelight.networktables.LimelightPoseEstimator.EstimationMode;
-import limelight.networktables.PoseEstimate;
-import limelight.results.RawFiducial;
+import limelight.networktables.LimelightSettings.ImuMode;
+import limelight.networktables.LimelightSettings.LEDMode;
 import swervelib.SwerveDrive;
+import limelight.networktables.Orientation3d;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.ElevatorConfig;
@@ -42,6 +45,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
     private final DigitalInput topLimit;
     private final DigitalInput bottomLimit;
+
+    // private Limelight limelight = new Limelight("limelight2");
 
     public ClimberSubsystem() {
         SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
@@ -69,6 +74,25 @@ public class ClimberSubsystem extends SubsystemBase {
                         .withStartingHeight(Meters.of(0))
                         .withSoftLimits(Meters.of(0), Meters.of(0.75))
                         .withTelemetry("Climber", TelemetryVerbosity.HIGH));
+
+    //     limelight.getSettings()
+    //       .withLimelightLEDMode(LEDMode.PipelineControl)
+    //       .withCameraOffset(new Pose3d(
+    //             Inches.of(0).in(Meters),
+    //             Inches.of(0).in(Meters),
+    //             Inches.of(0).in(Meters),
+    //             new Rotation3d(0, Degrees.of(0).in(Radians), Degrees.of(0).in(Radians))))
+    //       .withImuMode(ImuMode.InternalImuMT1Assist)
+    //       .withImuAssistAlpha(0.01)
+    //       .withRobotOrientation(new Orientation3d(
+    //           drivetrain.getSwerveDrive().getGyro().getRotation3d().plus(new Rotation3d(0, 0, 90)),
+    //           new AngularVelocity3d(
+    //               DegreesPerSecond.of(0),
+    //               DegreesPerSecond.of(0),
+    //               DegreesPerSecond.of(0))))
+    //       .save();
+
+    //   poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
     }
 
     public Command climbUp() {

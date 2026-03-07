@@ -38,7 +38,10 @@ public class OperatorSubsystem extends SubsystemBase {
 
     public Command intakeAll() {
         return Commands.parallel(
-            shooter.forward().asProxy(),
+    //    return Commands.sequence(
+            shooter.forward().asProxy(), 
+            Commands.waitSeconds(0.5),
+    //         new WaitCommand(0.5),
             kicker.forward().asProxy()
             // (new WaitCommand(0.5).andThen()).asProxy()
             // (new WaitCommand(0.5).andThen(indexer::forward)).asProxy()

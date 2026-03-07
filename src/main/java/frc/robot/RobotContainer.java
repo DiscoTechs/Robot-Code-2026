@@ -53,11 +53,11 @@ public class RobotContainer {
 
     private boolean CLIMBER_ENABLED = true;
     private boolean SHOOTER_ENABLED = true;
-    private boolean INDEXER_ENABLED = false;
+    private boolean INDEXER_ENABLED = true;
     private boolean TURRET_ENABLED = true;
     private boolean KICKER_ENABLED = true;
-    private boolean INTAKE_PIVOT_ENABLED = false;
-    private boolean INTAKE_ENABLED = false;
+    private boolean INTAKE_PIVOT_ENABLED = true;
+    private boolean INTAKE_ENABLED = true;
 
     private final ClimberSubsystem climber = CLIMBER_ENABLED ? new ClimberSubsystem() : null;
     private final ShooterSubsystem shooter = SHOOTER_ENABLED ? new ShooterSubsystem() : null;
@@ -111,10 +111,10 @@ public class RobotContainer {
    
         int[] tags = { 16, 32 };
         NamedCommands.registerCommand("climbDriveToTarget", new DriveToTarget(drivebase, tags));
-        // NamedCommands.registerCommand("shoot", Commands.parallel(
-        //     shooter.forward().asProxy(),
-        //     (new WaitCommand(0.5).andThen(kicker::forward)).asProxy(),
-        //     (new WaitCommand(0.5).andThen(indexer::forward)).asProxy(), new WaitCommand(3).andThen(indexer::stop).andThen(kicker::stop).andThen(shooter::stop)));   
+        NamedCommands.registerCommand("shoot", Commands.parallel(
+            shooter.forward().asProxy(),
+            (new WaitCommand(0.5).andThen(kicker::forward)).asProxy(),
+            (new WaitCommand(0.5).andThen(indexer::forward)).asProxy(), new WaitCommand(3).andThen(indexer::stop).andThen(kicker::stop).andThen(shooter::stop)));   
 
         NamedCommands.registerCommand("climb", climber.climbDown()
             .andThen(climber.climbUp().withTimeout(2)
