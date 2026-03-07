@@ -50,8 +50,8 @@ public class OperatorSubsystem extends SubsystemBase {
 
     public Command outtakeAll() {
         return Commands.parallel(
-                indexer.reverse().asProxy()
-        // shooter.reverse().asProxy()
+                // indexer.reverse().asProxy()
+        // shooter.
         );
     }
 

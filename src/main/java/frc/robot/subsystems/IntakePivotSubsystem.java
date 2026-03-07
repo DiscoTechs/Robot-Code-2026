@@ -58,7 +58,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
                 new PivotConfig(smctl)
                         .withStartingPosition(Degrees.of(abEncoder.getValue() * 360))
                         .withWrapping(Degrees.of(0), Degrees.of(360))
-                        .withSoftLimits(Degrees.of(-45), Degrees.of(45))
+                        // .withSoftLimits(Degrees.of(-45), Degrees.of(45))
                         .withMOI(Meters.of(0.25), Pounds.of(4))
                         .withTelemetry("IntakePivot", TelemetryVerbosity.HIGH));
     }
@@ -68,13 +68,21 @@ public class IntakePivotSubsystem extends SubsystemBase {
         return intakepivot.setAngle(target); // TODO: TEST setMechanismPositionSetpoint
     }
 
+    public Command forward() {
+        return intakepivot.set(0.5);
+    }
+
+    public Command back() {
+        return intakepivot.set(-0.5);
+    }
+
     public Command stop() {
         return intakepivot.set(0);
     }
 
     public void periodic(){
         if (intakepivot != null) {
-            System.out.println("intakePivot: E: " + abEncoder.getValue() + "ANGLE: " + intakepivot.getAngle().in(Degrees));
+            // System.out.println("intakePivot: E: " + abEncoder.getValue() + "ANGLE: " + intakepivot.getAngle().in(Degrees));
             intakepivot.updateTelemetry();
         }
     }
