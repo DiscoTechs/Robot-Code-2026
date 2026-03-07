@@ -11,12 +11,18 @@ public class IntakeSubsystem extends SubsystemBase {
     private final double SPEED = 0.8;
 
     public Command forward() {
-        return Commands.runOnce(() -> m_motor.set(SPEED));
+        return Commands.runOnce(() -> {
+            System.out.println("FORWARD");
+            m_motor.set(SPEED);
+        });
     }
     
     // we prob don't need this but just in case
     public Command reverse() {
-        return Commands.runOnce(() -> m_motor.set(-SPEED));
+        return Commands.runOnce(() -> {
+            System.out.println("REVERSE");
+            m_motor.set(-SPEED);
+        });
     }
 
     public Command stop() {

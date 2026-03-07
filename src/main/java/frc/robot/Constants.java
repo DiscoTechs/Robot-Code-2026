@@ -61,7 +61,7 @@ public final class Constants {
         );
         public static final RobotConfig config = new RobotConfig(
                 ROBOT_MASS_KG,
-                1/12 * ROBOT_MASS_KG * (Math.pow(ROBOT_SQUARE_DIMENSIONS, 2) + Math.pow(ROBOT_SQUARE_DIMENSIONS, 2)), // Robot MOI 1/12 (kg*m^2)
+                (1/12) * ROBOT_MASS_KG * (Math.pow(ROBOT_SQUARE_DIMENSIONS, 2) + Math.pow(ROBOT_SQUARE_DIMENSIONS, 2)), // Robot MOI 1/12 (kg*m^2)
                 new ModuleConfig(
                         0.0508,
                         4.473,
@@ -107,8 +107,8 @@ public final class Constants {
         public static final int INDEXER_MOTOR_CAN_ID = 6; 
     }
     public static class IntakeConstants{
-        public static final int INTAKE_PIVOT_CAN_ID = 7;
-        public static final int INTAKE_CAN_ID = 8; // change later mabye
+        public static final int INTAKE_PIVOT_CAN_ID = 10;
+        public static final int INTAKE_CAN_ID = 11; // change later mabye
     }
     public static class KickerConstants{
         public static final int KICKER_CAN_ID = 4;

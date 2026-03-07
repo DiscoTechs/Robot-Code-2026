@@ -37,7 +37,7 @@ import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.OperatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.TurretSubsystem;
+// import frc.robot.subsystems.TurretSubsystem;
 import swervelib.SwerveDrive;
 
 /**
@@ -51,23 +51,23 @@ import swervelib.SwerveDrive;
 public class RobotContainer {
     private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
-    private boolean CLIMBER_ENABLED = true;
+    private boolean CLIMBER_ENABLED = false;
     private boolean SHOOTER_ENABLED = true;
     private boolean INDEXER_ENABLED = false;
-    private boolean TURRET_ENABLED = false;
+    // private boolean TURRET_ENABLED = false;
     private boolean KICKER_ENABLED = true;
-    private boolean INTAKE_PIVOT_ENABLED = false;
-    private boolean INTAKE_ENABLED = false;
+    private boolean INTAKE_PIVOT_ENABLED = true;
+    private boolean INTAKE_ENABLED = true;
 
     private final ClimberSubsystem climber = CLIMBER_ENABLED ? new ClimberSubsystem() : null;
     private final ShooterSubsystem shooter = SHOOTER_ENABLED ? new ShooterSubsystem() : null;
     private final IndexerSubsystem indexer = INDEXER_ENABLED ? new IndexerSubsystem() : null;
-    private final TurretSubsystem turret = TURRET_ENABLED ? new TurretSubsystem() : null;
+    // private final TurretSubsystem turret = TURRET_ENABLED ? new TurretSubsystem() : null;
     private final KickerSubsystem kicker = KICKER_ENABLED ? new KickerSubsystem() : null;
     private final IntakePivotSubsystem intakePivot = INTAKE_PIVOT_ENABLED ? new IntakePivotSubsystem () : null;
     private final IntakeSubsystem intake = INTAKE_ENABLED ? new IntakeSubsystem() : null;
     
-    private final OperatorSubsystem operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter, turret, intakePivot, intake, kicker);
+    private final OperatorSubsystem operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter, null, intakePivot, intake, kicker);
     private final OperatorInput operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, operatorSubsystem);
     private final DriverInput driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
 
@@ -109,20 +109,20 @@ public class RobotContainer {
             RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
         }
    
-        int[] tags = { 16, 32 };
-        NamedCommands.registerCommand("climbDriveToTarget", new DriveToTarget(drivebase, tags));
-        NamedCommands.registerCommand("shoot", Commands.parallel(
-            shooter.forward().asProxy(),
-            (new WaitCommand(0.5).andThen(kicker::forward)).asProxy()
-            // (new WaitCommand(0.5).andThen(indexer::forward)).asProxy(),
-            // new WaitCommand(3).andThen(indexer::stop).andThen(kicker::stop).andThen(shooter::stop))
-        ));   
+        // int[] tags = { 16, 32 };
+        // NamedCommands.registerCommand("climbDriveToTarget", new DriveToTarget(drivebase, tags));
+        // NamedCommands.registerCommand("shoot", Commands.parallel(
+        //     shooter.forward().asProxy(),
+        //     (new WaitCommand(0.5).andThen(kicker::forward)).asProxy()
+        //     // (new WaitCommand(0.5).andThen(indexer::forward)).asProxy(),
+        //     // new WaitCommand(3).andThen(indexer::stop).andThen(kicker::stop).andThen(shooter::stop))
+        // ));   
 
-        NamedCommands.registerCommand("climb", climber.climbDown()
-            .andThen(climber.climbUp().withTimeout(2)
-            .andThen(climber.climbDown())));
-        NamedCommands.registerCommand("climbUp", climber.climbUp());
-        NamedCommands.registerCommand("climbDown", climber.climbDown());
+        // NamedCommands.registerCommand("climb", climber.climbDown()
+        //     .andThen(climber.climbUp().withTimeout(2)
+        //     .andThen(climber.climbDown())));
+        // NamedCommands.registerCommand("climbUp", climber.climbUp());
+        // NamedCommands.registerCommand("climbDown", climber.climbDown());
 
         // NamedCommands.registerCommand("turretAngle0", turret.setAngle(Degrees.of(0)));
         // NamedCommands.registerCommand("turretAngle45", turret.setAngle(Degrees.of(45)));

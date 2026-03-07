@@ -1,6 +1,7 @@
 package frc.robot.inputs;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import static edu.wpi.first.units.Units.Degrees;
@@ -54,17 +55,17 @@ public class OperatorInput {
             double trig = controller.getRightTriggerAxis();
 
             if (trig < 0.2) {
-                Logger.recordOutput("ShooterSpeed", 0);
+                Logger.recordOutput("ShooterSpeed", "0");
                 operator.shooter.set(0).execute();
             } else {
                 if (0.2 <= trig && trig <= 0.5) {
-                    Logger.recordOutput("ShooterSpeed", 0.35);
+                    Logger.recordOutput("ShooterSpeed", "35");
                     operator.shooter.set(0.35).execute();
                 } else if (0.5 <= trig && trig <= 0.75) {
-                    Logger.recordOutput("ShooterSpeed", 0.6);
+                    Logger.recordOutput("ShooterSpeed", "0.6");
                     operator.shooter.set(0.6).execute();
                 } else if (0.76 <= trig && trig <= 1) {
-                    Logger.recordOutput("ShooterSpeed", 0.75);
+                    Logger.recordOutput("ShooterSpeed", "0.75");
                     operator.shooter.set(0.75).execute();
                 }
             }
@@ -81,12 +82,24 @@ public class OperatorInput {
 
         if (operator.intakepivot != null) {
             controller.y()
-                    .whileTrue(operator.intakepivot.forward())
-                    .onFalse(operator.intakepivot.stop());
+                    .whileTrue(Commands.runOnce(() -> {
+                        System.out.println("FORWARD");
+                        operator.intakepivot.forward();
+                    }))
+                    .onFalse(Commands.runOnce(() -> {
+                        System.out.println("STOP");
+                        operator.intakepivot.stop();
+                    }));
 
             controller.x()
-                    .whileTrue(operator.intakepivot.back())
-                    .onFalse(operator.intakepivot.stop());
+                    .whileTrue(Commands.runOnce(() -> {
+                        System.out.println("BACK");
+                        operator.intakepivot.reverse();
+                    }))
+                    .onFalse(Commands.runOnce(() -> {
+                        System.out.println("STOP");
+                        operator.intakepivot.stop();
+                    }));
         }
 
         if (operator.indexer != null && operator.intake != null) {

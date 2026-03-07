@@ -18,7 +18,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -36,54 +38,80 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakePivotSubsystem extends SubsystemBase {
-    private final SmartMotorController smctl;
-    private final Pivot intakepivot;
-
-    private final AnalogInput abEncoder;
+    // private SmartMotorController smctl;
+    // private Pivot intakepivot;
+    // private AnalogInput abEncoder;
+    private Talon motor;
 
     public IntakePivotSubsystem() {
-       abEncoder = new AnalogInput(3); // TODO: Set Absolute Encoder ID
+    //    abEncoder = new AnalogInput(3); // TODO: Set Absolute Encoder ID
+        motor = new Talon(IntakeConstants.INTAKE_PIVOT_CAN_ID); 
 
-        SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
-                .withGearing(new MechanismGearing(GearBox.fromReductionStages(100)))
-                .withStatorCurrentLimit(Amps.of(40))
-                .withMotorInverted(false)
-                .withIdleMode(MotorMode.COAST)
-                .withControlMode(ControlMode.CLOSED_LOOP)
-                .withExternalEncoder(abEncoder)
-                .withTelemetry("IntakePivotMotor", TelemetryVerbosity.HIGH);
+        // SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
+        //         .withGearing(new MechanismGearing(GearBox.fromReductionStages(100)))
+        //         .withStatorCurrentLimit(Amps.of(40))
+        //         .withMotorInverted(false)
+        //         .withIdleMode(MotorMode.COAST)
+        //         .withControlMode(ControlMode.CLOSED_LOOP)
+        //         // .withExternalEncoder(abEncoder)
+        //         .withTelemetry("IntakePivotMotor", TelemetryVerbosity.HIGH);
                 
-        smctl = new TalonFXWrapper(new TalonFX(IntakeConstants.INTAKE_PIVOT_CAN_ID, new CANBus("CANivore 1")), DCMotor.getKrakenX60(1), config);
-        intakepivot = new Pivot(
-                new PivotConfig(smctl)
-                        .withStartingPosition(Degrees.of(abEncoder.getValue() * 360))
-                        .withWrapping(Degrees.of(0), Degrees.of(360))
-                        // .withSoftLimits(Degrees.of(-45), Degrees.of(45))
-                        .withMOI(Meters.of(0.25), Pounds.of(4))
-                        .withTelemetry("IntakePivot", TelemetryVerbosity.HIGH));
+        // smctl = new TalonWrapper(), DCMotor.getAndymarkRs775_125(1), config);
+        // intakepivot = new Pivot(
+        //         new PivotConfig(smctl)
+        //                 // .withStartingPosition(Degrees.of(abEncoder.getValue() * 360))
+        //                 .withWrapping(Degrees.of(0), Degrees.of(360))
+        //                 // .withSoftLimits(Degrees.of(-45), Degrees.of(45))
+        //                 .withMOI(Meters.of(0.25), Pounds.of(4))
+        //                 .withTelemetry("IntakePivot", TelemetryVerbosity.HIGH));
     }
    
 
-    public Command setAngle(Angle target) {
-        return intakepivot.setAngle(target); // TODO: TEST setMechanismPositionSetpoint
+    // public Command setAngle(Angle target) {
+    //     return intakepivot.setAngle(target); // TODO: TEST setMechanismPositionSetpoint
+    // }
+
+    public void forward() {
+        motor.set(0.5);
     }
 
-    public Command forward() {
-        return intakepivot.set(0.5);
+    public void back() {
+        motor.set(-0.5);
     }
 
-    public Command back() {
-        return intakepivot.set(-0.5);
+    public void stop() {
+        motor.set(0);
     }
 
-    public Command stop() {
-        return intakepivot.set(0);
-    }
-
-    public void periodic(){
-        if (intakepivot != null) {
-            // System.out.println("intakePivot: E: " + abEncoder.getValue() + "ANGLE: " + intakepivot.getAngle().in(Degrees));
-            intakepivot.updateTelemetry();
-        }
-    }
+    // public void periodic(){
+    //     if (intakepivot != null) {
+    //         // System.out.println("intakePivot: E: " + abEncoder.getValue() + "ANGLE: " + intakepivot.getAngle().in(Degrees));
+    //         intakepivot.updateTelemetry();
+    //     }
+    // }
 }
+// package frc.robot.subsystems;
+
+// import edu.wpi.first.wpilibj.motorcontrol.Talon;
+// import edu.wpi.first.wpilibj2.command.Command;
+// import edu.wpi.first.wpilibj2.command.Commands;
+// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+// import frc.robot.Constants.IntakeConstants;
+
+// public class IntakePivotSubsystem extends SubsystemBase {
+//     private final Talon m_motor = new Talon(IntakeConstants.INTAKE_PIVOT_CAN_ID); // change to what it actucaly is
+//     private final double SPEED = 0.8;
+
+//     public Command forward() {
+//         return Commands.runOnce(() -> m_motor.set(SPEED));
+//     }
+    
+//     // we prob don't need this but just in case
+//     public Command reverse() {
+//         return Commands.runOnce(() -> m_motor.set(-SPEED));
+//     }
+
+//     public Command stop() {
+//         return Commands.runOnce(() -> m_motor.set(0));
+//     }
+// }

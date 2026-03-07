@@ -6,6 +6,7 @@ import frc.robot.Constants.OperatorConstants;
 import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.commands.DriveToTarget;
 import swervelib.SwerveInputStream;
 
@@ -23,10 +24,15 @@ public class DriverInput {
         Logger.recordOutput("RobotPOV", robotRelative ? "Robot" : "Field");
     }
 
+    public Alliance getAlliance() {
+        return DriverStation.getAlliance().orElse(Alliance.Red);
+    }
+
     public void init() {
+        // boolean getAlliance() == Alliance.Red = getAlliance() == Alliance.Red;
         SwerveInputStream driveAngularVelocity = SwerveInputStream
-                .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * -1, () -> controller.getLeftX() * -1)
-                .withControllerRotationAxis(() -> controller.getRightX() * -1)
+                .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * (getAlliance() == Alliance.Red ? -1 : 1), () -> controller.getLeftX() * (getAlliance() == Alliance.Red ? -1 : 1))
+                .withControllerRotationAxis(() -> controller.getRightX() * (getAlliance() == Alliance.Red ? 1 : -1))
                 .deadband(OperatorConstants.JOYSTICK_DEADBAND)
                 .scaleTranslation(OperatorConstants.TRANSLATION_SCALE)
                 .robotRelative(() -> robotRelative)
