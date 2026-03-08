@@ -16,18 +16,18 @@ import limelight.results.RawFiducial;
 import limelight.networktables.PoseEstimate;
 
 public class AutoCenter extends Command {
-    // private final PIDController turnPID = new PIDController(0.03, 0, 0.001);
+    private final PIDController turnPID = new PIDController(0.03, 0, 0.001);
     private final SwerveSubsystem drivetrain;
 
     public AutoCenter(SwerveSubsystem dt) {
         this.drivetrain = dt;
+        this.turnPID.setTolerance(1.0);
 
         addRequirements(dt);
     }
 
     @Override
-    public void initialize() {
-    }
+    public void initialize() {}
 
     @Override
     public void execute() {
@@ -37,14 +37,21 @@ public class AutoCenter extends Command {
                 RawFiducial tag = poseEstimate.rawFiducials[0];
                 if (tag == null) { return; }
 
-                System.out.println(tag.txnc);
-                drivetrain.getSwerveDrive().drive(new Translation2d(0, 0), tag.txnc, false, false);
+                System.out.println("TagX:" + tag.txnc);
+                double rotation = turnPID.calculate(tag.txnc, 0);
+                if (Math.abs(rotation) < 0.1) {
+                    rotation = 0;
+                }
+
+                System.out.println("R: " + rotation);
+                drivetrain.getSwerveDrive().drive(new Translation2d(0, 0), rotation, false, false);
             }
         });
     }
 
     @Override
     public boolean isFinished() {
-        return true;
+        System.out.println(turnPID.atSetpoint());
+        return turnPID.atSetpoint();
     }
 }
