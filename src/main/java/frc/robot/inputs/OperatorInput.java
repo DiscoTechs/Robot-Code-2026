@@ -62,10 +62,10 @@ public class OperatorInput {
                     Logger.recordOutput("ShooterSpeed", "35");
                     operator.shooter.set(0.35).execute();
                 } else if (0.5 <= trig && trig <= 0.75) {
-                    Logger.recordOutput("ShooterSpeed", "0.6");
+                    Logger.recordOutput("ShooterSpeed", "60%");
                     operator.shooter.set(0.6).execute();
                 } else if (0.76 <= trig && trig <= 1) {
-                    Logger.recordOutput("ShooterSpeed", "0.75");
+                    Logger.recordOutput("ShooterSpeed", "75%");
                     operator.shooter.set(0.75).execute();
                 }
             }

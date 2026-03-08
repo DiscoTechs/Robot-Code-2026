@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.commands.AutoCenter;
 import frc.robot.commands.DriveToTarget;
 import swervelib.SwerveInputStream;
 
@@ -70,7 +71,7 @@ public class DriverInput {
             controller.back().whileTrue(Commands.none());
 
             // controller.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly())
-            controller.leftBumper().whileTrue(new DriveToTarget(drivebase));
+            controller.leftBumper().whileTrue(new AutoCenter(drivebase));
             controller.rightBumper().onTrue(Commands.runOnce(() -> {
                 recordTelemetry();
                 robotRelative = !robotRelative;
