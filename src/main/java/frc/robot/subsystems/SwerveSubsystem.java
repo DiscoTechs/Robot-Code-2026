@@ -144,7 +144,7 @@ public class SwerveSubsystem extends SubsystemBase {
     CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
     if (Constants.Limelight.ENABLED) {
-      limelight = new Limelight("limelight");
+      limelight = new Limelight("limelight-two");
       limelight.getSettings()
           .withLimelightLEDMode(LEDMode.PipelineControl)
           .withCameraOffset(Constants.Limelight.ROBOT_TO_CAMERA_POSE)

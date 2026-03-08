@@ -45,7 +45,7 @@ public final class Constants {
     public static final double ROBOT_SQUARE_DIMENSIONS = Units.inchesToMeters(21.75);
 
     public static class Limelight {
-        public static final boolean ENABLED = false;
+        public static final boolean ENABLED = true;
         public static final Pose3d ROBOT_TO_CAMERA_POSE = new Pose3d(
                 Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),

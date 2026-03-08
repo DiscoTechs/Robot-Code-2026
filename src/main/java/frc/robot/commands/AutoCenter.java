@@ -37,6 +37,7 @@ public class AutoCenter extends Command {
                 RawFiducial tag = poseEstimate.rawFiducials[0];
                 if (tag == null) { return; }
 
+                System.out.println(tag.txnc);
                 drivetrain.getSwerveDrive().drive(new Translation2d(0, 0), tag.txnc, false, false);
             }
         });
