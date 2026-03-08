@@ -27,26 +27,28 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IndexerSubsystem extends SubsystemBase {
-    private final SmartMotorController smctl;
-    private final FlyWheel indexer;
+    private SmartMotorController smctl;
+    private FlyWheel indexer;
 
-    private final double DEFAULT_SPEED = 0.85;
+    private final double DEFAULT_SPEED = 1.00;
 
     public IndexerSubsystem() {
         SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
-            .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
-            .withStatorCurrentLimit(Amps.of(20))
-            .withMotorInverted(false)
-            .withControlMode(ControlMode.OPEN_LOOP)
-            .withIdleMode(MotorMode.BRAKE)
-            .withTelemetry("IndexerMotor", TelemetryVerbosity.HIGH);
+                .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
+                .withStatorCurrentLimit(Amps.of(40))
+                .withMotorInverted(false)
+                .withControlMode(ControlMode.OPEN_LOOP)
+                .withIdleMode(MotorMode.BRAKE)
+                .withTelemetry("IndexerMotor", TelemetryVerbosity.HIGH);
 
-        this.smctl = new TalonFXWrapper(new TalonFX(IndexerConstants.INDEXER_MOTOR_CAN_ID, new CANBus("CANivore 1")), DCMotor.getKrakenX60(1), config);
+        this.smctl = new TalonFXWrapper(
+                new TalonFX(IndexerConstants.INDEXER_MOTOR_CAN_ID, new CANBus("CANivore 1")),
+                DCMotor.getKrakenX60(1), config);
         this.indexer = new FlyWheel(new FlyWheelConfig(smctl)
-            .withDiameter(Inches.of(1.5))
-            .withMass(Pounds.of(0.2))
-            .withSoftLimit(RPM.of(-6000), RPM.of(6000))
-            .withTelemetry("IndexerWheel", TelemetryVerbosity.HIGH));
+                .withDiameter(Inches.of(1.5))
+                .withMass(Pounds.of(0.2))
+                .withSoftLimit(RPM.of(-6000), RPM.of(6000))
+                .withTelemetry("IndexerWheel", TelemetryVerbosity.HIGH));
     }
 
     public Command forward() {

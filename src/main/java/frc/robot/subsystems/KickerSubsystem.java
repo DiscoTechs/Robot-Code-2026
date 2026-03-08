@@ -39,6 +39,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 public class KickerSubsystem extends SubsystemBase {
     private final SmartMotorController smctl;
     private final FlyWheel kicker;
+    private TalonFX motor;
 
     private final double DEFAULT_SPEED = 0.85;
 
@@ -51,7 +52,8 @@ public class KickerSubsystem extends SubsystemBase {
             .withIdleMode(MotorMode.COAST)
             .withTelemetry("KickerMotor", TelemetryVerbosity.HIGH);
 
-        this.smctl = new TalonFXWrapper(new TalonFX(KickerConstants.KICKER_CAN_ID, new CANBus("CANivore 1")), DCMotor.getKrakenX60(1), config);
+        this.motor = new TalonFX(KickerConstants.KICKER_CAN_ID, new CANBus("CANivore 1"));
+        this.smctl = new TalonFXWrapper(this.motor, DCMotor.getKrakenX60(1), config);
         this.kicker = new FlyWheel(new FlyWheelConfig(smctl)
             .withDiameter(Inches.of(1.5))
             .withMass(Pounds.of(0.2))

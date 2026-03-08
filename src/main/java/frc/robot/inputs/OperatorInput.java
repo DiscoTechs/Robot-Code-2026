@@ -31,11 +31,11 @@ public class OperatorInput {
         }
 
         if (operator.climber != null) {
-            controller.povDown()
+            controller.povUp()
                     .whileTrue(operator.climber.climbDown())
                     .onFalse(operator.climber.stop());
             // climber up and down are inverted
-            controller.povUp()
+            controller.povDown()
                     .whileTrue(operator.climber.climbUp())
                     .onFalse(operator.climber.stop());
         }
@@ -51,25 +51,28 @@ public class OperatorInput {
             }, operator.turret));
         }
 
-        operator.shooter.setDefaultCommand(new RunCommand(() -> {
-            double trig = controller.getRightTriggerAxis();
+        if (operator.shooter != null) {
+            operator.shooter.setDefaultCommand(new RunCommand(() -> {
+                double trig = controller.getRightTriggerAxis();
 
-            if (trig < 0.2) {
-                Logger.recordOutput("ShooterSpeed", "0");
-                operator.shooter.set(0).execute();
-            } else {
-                if (0.2 <= trig && trig <= 0.5) {
-                    Logger.recordOutput("ShooterSpeed", "35");
-                    operator.shooter.set(0.35).execute();
-                } else if (0.5 <= trig && trig <= 0.75) {
-                    Logger.recordOutput("ShooterSpeed", "0.6");
-                    operator.shooter.set(0.6).execute();
-                } else if (0.76 <= trig && trig <= 1) {
-                    Logger.recordOutput("ShooterSpeed", "0.75");
-                    operator.shooter.set(0.75).execute();
+                if (trig < 0.2) {
+                    Logger.recordOutput("ShooterSpeed", "0%");
+                    operator.shooter.set(0).execute();
+                } else {
+                    if (0.2 <= trig && trig <= 0.5) {
+                        Logger.recordOutput("ShooterSpeed", "35%");
+                        operator.shooter.set(0.35).execute();
+                    } else if (0.5 <= trig && trig <= 0.75) {
+                        Logger.recordOutput("ShooterSpeed", "60%");
+                        operator.shooter.set(0.6).execute();
+                    } else if (0.76 <= trig && trig <= 1) {
+                        Logger.recordOutput("ShooterSpeed", "75%");
+                        operator.shooter.set(0.75).execute();
+                    }
                 }
-            }
-        }, operator.shooter));
+            }, operator.shooter));
+        }
+
         // controller.leftTrigger().onTrue(Commands.runOnce(() ->
         // operator.shooter.reverse()));
         // controller.leftTrigger().onFalse(Commands.runOnce(() ->
@@ -77,29 +80,19 @@ public class OperatorInput {
 
         // controller.rightTrigger().onFalse(operator.stopAll());
 
-        controller.rightBumper().onTrue(operator.kicker.forward());
-        controller.leftBumper().onTrue(operator.kicker.stop());
+        if (operator.kicker != null) {
+            controller.rightBumper().onTrue(operator.kicker.forward());
+            controller.leftBumper().onTrue(operator.kicker.stop());
+        }
 
         if (operator.intakepivot != null) {
             controller.y()
-                    .whileTrue(Commands.runOnce(() -> {
-                        System.out.println("FORWARD");
-                        operator.intakepivot.forward();
-                    }))
-                    .onFalse(Commands.runOnce(() -> {
-                        System.out.println("STOP");
-                        operator.intakepivot.stop();
-                    }));
+                    .whileTrue(operator.intakepivot.forward())
+                    .onFalse(operator.intakepivot.stop());
 
             controller.x()
-                    .whileTrue(Commands.runOnce(() -> {
-                        System.out.println("BACK");
-                        operator.intakepivot.back();
-                    }))
-                    .onFalse(Commands.runOnce(() -> {
-                        System.out.println("STOP");
-                        operator.intakepivot.stop();
-                    }));
+                    .whileTrue(operator.intakepivot.back())
+                    .onFalse(operator.intakepivot.stop());
         }
 
         if (operator.indexer != null && operator.intake != null) {
