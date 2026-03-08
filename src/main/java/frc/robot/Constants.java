@@ -35,7 +35,7 @@ import swervelib.math.Matter;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(50);
+    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(97.8);
     public static final Matter CHASSIS_MATTER = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)),
             ROBOT_MASS_KG);
     public static final double MAX_LINEAR_SPEED_MPS = Units.feetToMeters(14.5); // Robot maximum speed (m/s). Used to
@@ -61,7 +61,7 @@ public final class Constants {
         );
         public static final RobotConfig config = new RobotConfig(
                 ROBOT_MASS_KG,
-                (1/12) * ROBOT_MASS_KG * (Math.pow(ROBOT_SQUARE_DIMENSIONS, 2) + Math.pow(ROBOT_SQUARE_DIMENSIONS, 2)), // Robot MOI 1/12 (kg*m^2)
+                5.0, // (1/12) * ROBOT_MASS_KG * (Math.pow(ROBOT_SQUARE_DIMENSIONS, 2) + Math.pow(ROBOT_SQUARE_DIMENSIONS, 2)), // Robot MOI 1/12 (kg*m^2)
                 new ModuleConfig(
                         0.0508,
                         4.473,
@@ -92,7 +92,7 @@ public final class Constants {
     public static class ClimberConstants {
         public static final Distance STARTING_HEIGHT = Meters.of(0);
         public static final Mass MASS = Pounds.of(16);
-        public static final int CLIMBER_MOTOR_CAN_ID = 1;
+        public static final int CLIMBER_MOTOR_CAN_ID = 8;
     }
 
     public static class ShooterConstants {

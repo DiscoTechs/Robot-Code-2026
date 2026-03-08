@@ -26,19 +26,19 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private final SmartMotorController smctl;
-    private final FlyWheel shooter;
-    private final TalonFX motor;
+    private SmartMotorController smctl;
+    private FlyWheel shooter;
+    private TalonFX motor;
 
     public ShooterSubsystem() {
         SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
-            .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
-            .withStatorCurrentLimit(Amps.of(40))
-            .withMotorInverted(true)
-            .withIdleMode(MotorMode.COAST)
-            .withControlMode(ControlMode.CLOSED_LOOP)
-            .withClosedLoopController(0.01, 0.0, 0.0, RPM.of(6000), RotationsPerSecondPerSecond.of(4500))
-            .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
+                .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
+                .withStatorCurrentLimit(Amps.of(40))
+                .withMotorInverted(true)
+                .withIdleMode(MotorMode.COAST)
+                .withControlMode(ControlMode.CLOSED_LOOP)
+                .withClosedLoopController(0.01, 0.0, 0.0, RPM.of(6000), RotationsPerSecondPerSecond.of(4500))
+                .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
 
         motor = new TalonFX(ShooterConstants.SHOOTER_MOTOR_CAN_ID, new CANBus("CANivore 1"));
         smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);

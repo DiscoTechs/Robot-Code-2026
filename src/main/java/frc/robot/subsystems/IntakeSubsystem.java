@@ -10,24 +10,23 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private final TalonSRX m_motor = new TalonSRX(IntakeConstants.INTAKE_CAN_ID); // change to what it actucaly is
     private final double SPEED = 0.8;
+    private TalonSRX motor;
+
+    public IntakeSubsystem() {
+        this.motor = new TalonSRX(IntakeConstants.INTAKE_CAN_ID); // change to what it actucaly is
+    }
 
     public Command forward() {
-        return Commands.runOnce(() -> {
-            m_motor.set(TalonSRXControlMode.PercentOutput, -SPEED);
-        });
+        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, -SPEED));
     }
     
     // we prob don't need this but just in case
     public Command reverse() {
-        return Commands.runOnce(() -> {
-            System.out.println("REVERSE");
-            m_motor.set(TalonSRXControlMode.PercentOutput, SPEED);
-        });
+        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, SPEED));
     }
 
     public Command stop() {
-        return Commands.runOnce(() -> m_motor.set(TalonSRXControlMode.PercentOutput, 0));
+        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, 0));
     }
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -40,50 +41,53 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakePivotSubsystem extends SubsystemBase {
-    // private SmartMotorController smctl;
-    // private Pivot intakepivot;
+    private SmartMotorController smctl;
+    private Pivot intakepivot;
     // private AnalogInput abEncoder;
     private TalonSRX motor;
 
     public IntakePivotSubsystem() {
-    //    abEncoder = new AnalogInput(3); // TODO: Set Absolute Encoder ID
-        motor = new TalonSRX(IntakeConstants.INTAKE_PIVOT_CAN_ID); 
+        // abEncoder = new AnalogInput(3); // TODO: Set Absolute Encoder ID
+        motor = new TalonSRX(IntakeConstants.INTAKE_PIVOT_CAN_ID);
+
+        // motor.configAllSettings(new TalonSRXConfiguration().)
 
         // SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
-        //         .withGearing(new MechanismGearing(GearBox.fromReductionStages(100)))
-        //         .withStatorCurrentLimit(Amps.of(40))
-        //         .withMotorInverted(false)
-        //         .withIdleMode(MotorMode.COAST)
-        //         .withControlMode(ControlMode.CLOSED_LOOP)
-        //         // .withExternalEncoder(abEncoder)
-        //         .withTelemetry("IntakePivotMotor", TelemetryVerbosity.HIGH);
-                
+        // .withGearing(new MechanismGearing(GearBox.fromReductionStages(100)))
+        // .withStatorCurrentLimit(Amps.of(40))
+        // .withMotorInverted(false)
+        // .withIdleMode(MotorMode.COAST)
+        // .withControlMode(ControlMode.CLOSED_LOOP)
+        // // .withExternalEncoder(abEncoder)
+        // .withTelemetry("IntakePivotMotor", TelemetryVerbosity.HIGH);
+
         // smctl = new TalonWrapper(), DCMotor.getAndymarkRs775_125(1), config);
         // intakepivot = new Pivot(
-        //         new PivotConfig(smctl)
-        //                 // .withStartingPosition(Degrees.of(abEncoder.getValue() * 360))
-        //                 .withWrapping(Degrees.of(0), Degrees.of(360))
-        //                 // .withSoftLimits(Degrees.of(-45), Degrees.of(45))
-        //                 .withMOI(Meters.of(0.25), Pounds.of(4))
-        //                 .withTelemetry("IntakePivot", TelemetryVerbosity.HIGH));
+        // new PivotConfig(smctl)
+        // // .withStartingPosition(Degrees.of(abEncoder.getValue() * 360))
+        // .withWrapping(Degrees.of(0), Degrees.of(360))
+        // // .withSoftLimits(Degrees.of(-45), Degrees.of(45))
+        // .withMOI(Meters.of(0.25), Pounds.of(4))
+        // .withTelemetry("IntakePivot", TelemetryVerbosity.HIGH));
     }
 
-    public void forward() {
-        motor.set(TalonSRXControlMode.PercentOutput, 0.25);
+    public Command forward() {
+        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, 0.35));
     }
 
-    public void back() {
-        motor.set(TalonSRXControlMode.PercentOutput, -0.25);
+    public Command back() {
+        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, -0.30));
     }
 
-    public void stop() {
-        motor.set(TalonSRXControlMode.PercentOutput, 0);
+    public Command stop() {
+        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, 0));
     }
 
     // public void periodic(){
-    //     if (intakepivot != null) {
-    //         // System.out.println("intakePivot: E: " + abEncoder.getValue() + "ANGLE: " + intakepivot.getAngle().in(Degrees));
-    //         intakepivot.updateTelemetry();
-    //     }
+    // if (intakepivot != null) {
+    // // System.out.println("intakePivot: E: " + abEncoder.getValue() + "ANGLE: " +
+    // intakepivot.getAngle().in(Degrees));
+    // intakepivot.updateTelemetry();
+    // }
     // }
 }
