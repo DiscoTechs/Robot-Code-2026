@@ -35,7 +35,7 @@ import swervelib.math.Matter;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(97.8);
+    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(112.9);
     public static final Matter CHASSIS_MATTER = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)),
             ROBOT_MASS_KG);
     public static final double MAX_LINEAR_SPEED_MPS = Units.feetToMeters(14.5); // Robot maximum speed (m/s). Used to
@@ -47,7 +47,8 @@ public final class Constants {
     public static class Limelight {
         public static final boolean ENABLED = true;
         public static final Pose3d ROBOT_TO_CAMERA_POSE = new Pose3d(
-                Inches.of(0).in(Meters),
+                Inches.of(0).in(Meters),.......
+                2
                 Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),
                 new Rotation3d(0, Degrees.of(0).in(Radians), Degrees.of(0).in(Radians)));
