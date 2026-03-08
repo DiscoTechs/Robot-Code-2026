@@ -42,9 +42,4 @@ public class AutoCenter extends Command {
             }
         });
     }
-
-    @Override
-    public boolean isFinished() {
-        return true;
-    }
 }
