@@ -64,6 +64,9 @@ import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+
 public class SwerveSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
   private Limelight limelight;
@@ -375,16 +378,31 @@ public class SwerveSubsystem extends SubsystemBase {
    *                         smoother controls.
    * @return Drive command.
    */
+/**
+ * Enable or disable half speed driving.
+ *
+ * @param enabled True = half speed, False = full speed
+ */
+
+private double speedMultiplier = 1.0;
+public void setHalfSpeed(boolean enabled) {
+if (enabled) {
+    speedMultiplier = 0.5;
+} else {
+    speedMultiplier = 1.0;
+}}
+
+   
   public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY,
       DoubleSupplier angularRotationX) {
     return run(() -> {
       // Make the robot move
-      swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
-          translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(),
-          translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()), 0.8),
-          Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity(),
-          true,
-          false);
+     swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
+    translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity() * speedMultiplier,
+    translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity() * speedMultiplier), 0.8),
+    Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity() * speedMultiplier,
+    true,
+    false);
     });
   }
 
@@ -404,6 +422,7 @@ public class SwerveSubsystem extends SubsystemBase {
       DoubleSupplier headingY) {
     // swerveDrive.setHeadingCorrection(true); // Normally you would want heading
     // correction for this kind of control.
+    
     return run(() -> {
 
       Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(translationX.getAsDouble(),

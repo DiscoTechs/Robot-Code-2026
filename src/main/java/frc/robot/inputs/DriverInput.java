@@ -76,6 +76,9 @@ public class DriverInput {
                 recordTelemetry();
                 robotRelative = !robotRelative;
             }));
+        controller.a()
+    .onTrue(Commands.runOnce(() -> drivebase.setHalfSpeed(true)))
+    .onFalse(Commands.runOnce(() -> drivebase.setHalfSpeed(false)));
         }
     }
 }

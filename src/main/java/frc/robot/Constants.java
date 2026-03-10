@@ -47,8 +47,7 @@ public final class Constants {
     public static class Limelight {
         public static final boolean ENABLED = true;
         public static final Pose3d ROBOT_TO_CAMERA_POSE = new Pose3d(
-                Inches.of(0).in(Meters),.......
-                2
+                Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),
                 new Rotation3d(0, Degrees.of(0).in(Radians), Degrees.of(0).in(Radians)));
