@@ -14,7 +14,6 @@ public class OperatorSubsystem extends SubsystemBase {
     public final ClimberSubsystem climber;
     public final IndexerSubsystem indexer;
     public final ShooterSubsystem shooter;
-    public final TurretSubsystem turret;
     public final IntakePivotSubsystem intakepivot;
     public final IntakeSubsystem intake;
     public final KickerSubsystem kicker;
@@ -22,12 +21,10 @@ public class OperatorSubsystem extends SubsystemBase {
     public AngularVelocity targetShooterSpeed = RPM.of(6000);
     public final Trigger isShooterAtSpeed;
 
-    public OperatorSubsystem(ClimberSubsystem climb, IndexerSubsystem ind, ShooterSubsystem shoot,
-            TurretSubsystem turr, IntakePivotSubsystem intPiv, IntakeSubsystem intake, KickerSubsystem kick) {
+    public OperatorSubsystem(ClimberSubsystem climb, IndexerSubsystem ind, ShooterSubsystem shoot, IntakePivotSubsystem intPiv, IntakeSubsystem intake, KickerSubsystem kick) {
         this.climber = climb;
         this.shooter = shoot;
         this.indexer = ind;
-        this.turret = turr;
         this.intakepivot = intPiv;
         this.intake = intake;
         this.kicker = kick;

@@ -37,7 +37,6 @@ import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.OperatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-// import frc.robot.subsystems.TurretSubsystem;
 import swervelib.SwerveDrive;
 
 /**
@@ -54,7 +53,6 @@ public class RobotContainer {
     private boolean CLIMBER_ENABLED = true;
     private boolean SHOOTER_ENABLED = true;
     private boolean INDEXER_ENABLED = true;
-    // private boolean TURRET_ENABLED = false;
     private boolean KICKER_ENABLED = true;
     private boolean INTAKE_PIVOT_ENABLED = true;
     private boolean INTAKE_ENABLED = true;
@@ -62,8 +60,6 @@ public class RobotContainer {
     private ClimberSubsystem climber;
     private ShooterSubsystem shooter;
     private IndexerSubsystem indexer;
-    // private final TurretSubsystem turret = TURRET_ENABLED ? new TurretSubsystem()
-    // : null;
     private KickerSubsystem kicker;
     private IntakePivotSubsystem intakePivot;
     private IntakeSubsystem intake;
@@ -137,7 +133,7 @@ public class RobotContainer {
             System.out.println(err);
         }
 
-        this.operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter, null, intakePivot, intake, kicker);
+        this.operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter, intakePivot, intake, kicker);
 
         // Setup Inputs
         this.driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
@@ -188,12 +184,7 @@ public class RobotContainer {
             NamedCommands.registerCommand("climbDown", climber.climbDown());
         }
 
-        // NamedCommands.registerCommand("turretAngle0",
-        // turret.setAngle(Degrees.of(0)));
-        // NamedCommands.registerCommand("turretAngle45",
-        // turret.setAngle(Degrees.of(45)));
-        // NamedCommands.registerCommand("turretAngle90",
-        // turret.setAngle(Degrees.of(90)));
+      
     }
 
     public Command getAutonomousCommand() {

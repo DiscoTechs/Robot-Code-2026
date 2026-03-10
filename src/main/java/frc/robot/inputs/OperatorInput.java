@@ -40,17 +40,7 @@ public class OperatorInput {
                     .onFalse(operator.climber.stop());
         }
 
-        if (operator.turret != null) {
-            operator.turret.setDefaultCommand(new RunCommand(() -> {
-                double leftAxis = controller.getLeftX();
-                if (Math.abs(leftAxis) < 0.1) {
-                    operator.turret.set(0).execute();
-                } else {
-                    operator.turret.set(leftAxis * 0.5).execute();
-                }
-            }, operator.turret));
-        }
-
+       
         if (operator.shooter != null) {
             operator.shooter.setDefaultCommand(new RunCommand(() -> {
                 double trig = controller.getRightTriggerAxis();
