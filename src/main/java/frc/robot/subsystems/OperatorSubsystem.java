@@ -15,17 +15,15 @@ public class OperatorSubsystem extends SubsystemBase {
     public final ShooterSubsystem shooter;
     public final IntakePivotSubsystem intakepivot;
     public final IntakeSubsystem intake;
-    public final KickerSubsystem kicker;
 
     public AngularVelocity targetShooterSpeed = RPM.of(6000);
     public final Trigger isShooterAtSpeed;
 
-    public OperatorSubsystem( IndexerSubsystem ind, ShooterSubsystem shoot, IntakePivotSubsystem intPiv, IntakeSubsystem intake, KickerSubsystem kick) {
+    public OperatorSubsystem( IndexerSubsystem ind, ShooterSubsystem shoot, IntakePivotSubsystem intPiv, IntakeSubsystem intake) {
         this.shooter = shoot;
         this.indexer = ind;
         this.intakepivot = intPiv;
         this.intake = intake;
-        this.kicker = kick;
 
         this.isShooterAtSpeed = new Trigger(
                 () -> Math.abs(shooter.getSpeed().in(RPM) - targetShooterSpeed.in(RPM)) < RPM.of(100).in(RPM));
@@ -34,10 +32,8 @@ public class OperatorSubsystem extends SubsystemBase {
     public Command intakeAll() {
         return Commands.parallel(
     //    return Commands.sequence(
-            shooter.forward().asProxy(), 
-            Commands.waitSeconds(0.5),
+            shooter.forward().asProxy() 
     //         new WaitCommand(0.5),
-            kicker.forward().asProxy()
             // (new WaitCommand(0.5).andThen()).asProxy()
             // (new WaitCommand(0.5).andThen(indexer::forward)).asProxy()
         );
@@ -53,8 +49,7 @@ public class OperatorSubsystem extends SubsystemBase {
     public Command stopAll() {
         return Commands.parallel(
                 // indexer.stop().asProxy()
-                shooter.stop().asProxy(),
-                kicker.stop().asProxy()
+                shooter.stop().asProxy()
         );
     }
 

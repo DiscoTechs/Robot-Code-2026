@@ -62,10 +62,7 @@ public class OperatorInput {
 
         // controller.rightTrigger().onFalse(operator.stopAll());
 
-        if (operator.kicker != null) {
-            controller.rightBumper().onTrue(operator.kicker.forward());
-            controller.leftBumper().onTrue(operator.kicker.stop());
-        }
+       
 
         if (operator.intakepivot != null) {
             controller.y()

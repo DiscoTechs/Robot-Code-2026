@@ -32,7 +32,6 @@ import frc.robot.inputs.OperatorInput;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.OperatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -51,13 +50,11 @@ public class RobotContainer {
 
     private boolean SHOOTER_ENABLED = true;
     private boolean INDEXER_ENABLED = true;
-    private boolean KICKER_ENABLED = true;
     private boolean INTAKE_PIVOT_ENABLED = true;
     private boolean INTAKE_ENABLED = true;
 
     private ShooterSubsystem shooter;
     private IndexerSubsystem indexer;
-    private KickerSubsystem kicker;
     private IntakePivotSubsystem intakePivot;
     private IntakeSubsystem intake;
 
@@ -96,15 +93,7 @@ public class RobotContainer {
             System.out.println(err);
         }
 
-        try {
-            this.kicker = KICKER_ENABLED ? new KickerSubsystem() : null;
-        } catch (Error err) {
-            this.kicker = null;
-
-            System.out.println("WARNING: Kicker failed to init.");
-            System.out.println(err);
-        }
-
+      
         try {
             this.intakePivot = INTAKE_PIVOT_ENABLED ? new IntakePivotSubsystem() : null;
         } catch (Error err) {
@@ -123,7 +112,7 @@ public class RobotContainer {
             System.out.println(err);
         }
 
-        this.operatorSubsystem = new OperatorSubsystem( indexer, shooter, intakePivot, intake, kicker);
+        this.operatorSubsystem = new OperatorSubsystem( indexer, shooter, intakePivot, intake);
 
         // Setup Inputs
         this.driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
@@ -165,7 +154,8 @@ public class RobotContainer {
         // // new
         // WaitCommand(3).andThen(indexer::stop).andThen(kicker::stop).andThen(shooter::stop))
         // ));
-
+        NamedCommands.registerCommand("intake", intake.forward());
+        NamedCommands.registerCommand("outake", intake.reverse());
 
       
     }
