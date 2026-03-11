@@ -30,15 +30,7 @@ public class OperatorInput {
                     .onFalse(operator.indexer.stop());
         }
 
-        if (operator.climber != null) {
-            controller.povUp()
-                    .whileTrue(operator.climber.climbDown())
-                    .onFalse(operator.climber.stop());
-            // climber up and down are inverted
-            controller.povDown()
-                    .whileTrue(operator.climber.climbUp())
-                    .onFalse(operator.climber.stop());
-        }
+      
 
        
         if (operator.shooter != null) {

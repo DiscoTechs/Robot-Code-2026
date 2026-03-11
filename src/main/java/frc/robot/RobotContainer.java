@@ -29,7 +29,6 @@ import frc.robot.commands.RotateCommand;
 import frc.robot.inputs.DriverInput;
 import frc.robot.inputs.OperatorInput;
 // import frc.robot.inputs.OperatorInput;
-import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -50,14 +49,12 @@ import swervelib.SwerveDrive;
 public class RobotContainer {
     private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
-    private boolean CLIMBER_ENABLED = true;
     private boolean SHOOTER_ENABLED = true;
     private boolean INDEXER_ENABLED = true;
     private boolean KICKER_ENABLED = true;
     private boolean INTAKE_PIVOT_ENABLED = true;
     private boolean INTAKE_ENABLED = true;
 
-    private ClimberSubsystem climber;
     private ShooterSubsystem shooter;
     private IndexerSubsystem indexer;
     private KickerSubsystem kicker;
@@ -79,14 +76,7 @@ public class RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
 
-        try {
-            this.climber = CLIMBER_ENABLED ? new ClimberSubsystem() : null;
-        } catch (Error err) {
-            this.climber = null;
-
-            System.out.println("WARNING: Climber failed to init.");
-            System.out.println(err);
-        }
+      
 
         try {
             this.shooter = SHOOTER_ENABLED ? new ShooterSubsystem() : null;
@@ -133,7 +123,7 @@ public class RobotContainer {
             System.out.println(err);
         }
 
-        this.operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter, intakePivot, intake, kicker);
+        this.operatorSubsystem = new OperatorSubsystem( indexer, shooter, intakePivot, intake, kicker);
 
         // Setup Inputs
         this.driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
@@ -176,13 +166,6 @@ public class RobotContainer {
         // WaitCommand(3).andThen(indexer::stop).andThen(kicker::stop).andThen(shooter::stop))
         // ));
 
-        if (climber != null) {
-            NamedCommands.registerCommand("climb", climber.climbUp()
-                    .andThen(climber.climbDown().withTimeout(2)
-                    .andThen(climber.climbUp())));
-            NamedCommands.registerCommand("climbUp", climber.climbUp());
-            NamedCommands.registerCommand("climbDown", climber.climbDown());
-        }
 
       
     }

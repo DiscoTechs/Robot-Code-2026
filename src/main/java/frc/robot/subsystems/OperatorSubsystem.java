@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class OperatorSubsystem extends SubsystemBase {
-    public final ClimberSubsystem climber;
     public final IndexerSubsystem indexer;
     public final ShooterSubsystem shooter;
     public final IntakePivotSubsystem intakepivot;
@@ -21,8 +20,7 @@ public class OperatorSubsystem extends SubsystemBase {
     public AngularVelocity targetShooterSpeed = RPM.of(6000);
     public final Trigger isShooterAtSpeed;
 
-    public OperatorSubsystem(ClimberSubsystem climb, IndexerSubsystem ind, ShooterSubsystem shoot, IntakePivotSubsystem intPiv, IntakeSubsystem intake, KickerSubsystem kick) {
-        this.climber = climb;
+    public OperatorSubsystem( IndexerSubsystem ind, ShooterSubsystem shoot, IntakePivotSubsystem intPiv, IntakeSubsystem intake, KickerSubsystem kick) {
         this.shooter = shoot;
         this.indexer = ind;
         this.intakepivot = intPiv;
