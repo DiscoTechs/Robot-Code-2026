@@ -66,12 +66,12 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-
 public class SwerveSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
   private Limelight limelight;
 
   private LimelightPoseEstimator poseEstimator;
+  private double speedMultiplier = 1.0;
   private double distanceToHub = 0.0;
   private Pose3d redHub = new Pose3d(
       Meter.of(11.902),
@@ -119,7 +119,8 @@ public class SwerveSubsystem extends SubsystemBase {
     // periodically when they are not moving.
 
     // swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used
-    // over the internal encoder and push the offset s onto it. Throws warning if not
+    // over the internal encoder and push the offset s onto it. Throws warning if
+    // not
     // possible
 
     // PathPlanner
@@ -143,7 +144,8 @@ public class SwerveSubsystem extends SubsystemBase {
       e.printStackTrace();
     }
 
-    // Preload PathPlanner Path finding IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
+    // Preload PathPlanner Path finding IF USING CUSTOM PATHFINDER ADD BEFORE THIS
+    // LINE
     CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
     if (Constants.Limelight.ENABLED) {
@@ -378,31 +380,31 @@ public class SwerveSubsystem extends SubsystemBase {
    *                         smoother controls.
    * @return Drive command.
    */
-/**
- * Enable or disable half speed driving.
- *
- * @param enabled True = half speed, False = full speed
- */
 
-private double speedMultiplier = 1.0;
-public void setHalfSpeed(boolean enabled) {
-if (enabled) {
-    speedMultiplier = 0.5;
-} else {
-    speedMultiplier = 1.0;
-}}
+  /**
+   * Enable or disable half speed driving.
+   * - Brohan Tuffness
+   *
+   * @param enabled True = half speed, False = full speed
+   */
+  public void setHalfSpeed(boolean enabled) {
+    if (enabled) {
+      speedMultiplier = 0.5;
+    } else {
+      speedMultiplier = 1.0;
+    }
+  }
 
-   
-  public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY,
-      DoubleSupplier angularRotationX) {
+  public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX) {
     return run(() -> {
       // Make the robot move
-     swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
-    translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity() * speedMultiplier,
-    translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity() * speedMultiplier), 0.8),
-    Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity() * speedMultiplier,
-    true,
-    false);
+      swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
+          translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity() * speedMultiplier,
+          translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity() * speedMultiplier), 0.8),
+          Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity()
+              * speedMultiplier,
+          true,
+          false);
     });
   }
 
@@ -422,7 +424,7 @@ if (enabled) {
       DoubleSupplier headingY) {
     // swerveDrive.setHeadingCorrection(true); // Normally you would want heading
     // correction for this kind of control.
-    
+
     return run(() -> {
 
       Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(translationX.getAsDouble(),

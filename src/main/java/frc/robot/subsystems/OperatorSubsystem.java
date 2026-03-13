@@ -13,16 +13,16 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class OperatorSubsystem extends SubsystemBase {
     public final IndexerSubsystem indexer;
     public final ShooterSubsystem shooter;
-    public final IntakePivotSubsystem intakepivot;
+    public final IntakeSlideSubsystem intakeSlide;
     public final IntakeSubsystem intake;
 
     public AngularVelocity targetShooterSpeed = RPM.of(6000);
     public final Trigger isShooterAtSpeed;
 
-    public OperatorSubsystem( IndexerSubsystem ind, ShooterSubsystem shoot, IntakePivotSubsystem intPiv, IntakeSubsystem intake) {
+    public OperatorSubsystem( IndexerSubsystem ind, ShooterSubsystem shoot, IntakeSlideSubsystem intSlide, IntakeSubsystem intake) {
         this.shooter = shoot;
         this.indexer = ind;
-        this.intakepivot = intPiv;
+        this.intakeSlide = intSlide;
         this.intake = intake;
 
         this.isShooterAtSpeed = new Trigger(

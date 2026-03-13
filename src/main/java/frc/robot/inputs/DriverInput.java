@@ -25,17 +25,17 @@ public class DriverInput {
         Logger.recordOutput("RobotPOV", robotRelative ? "Robot" : "Field");
     }
 
-    public Alliance getAlliance() {
-        return DriverStation.getAlliance().orElse(Alliance.Red);
+    public boolean isRedAlliance() {
+        return DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red;
     }
 
     public void init() {
-        // boolean getAlliance() == Alliance.Red = getAlliance() == Alliance.Red;
         SwerveInputStream driveAngularVelocity = SwerveInputStream
-                .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * (getAlliance() == Alliance.Red ? -1 : 1), () -> controller.getLeftX() * (getAlliance() == Alliance.Red ? -1 : 1))
-                .withControllerRotationAxis(() -> controller.getRightX() * (getAlliance() == Alliance.Red ? 1 : -1))
-                .deadband(OperatorConstants.JOYSTICK_DEADBAND)
+                .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * (isRedAlliance() ? -1 : 1),
+                        () -> controller.getLeftX() * (isRedAlliance() ? -1 : 1))
+                .withControllerRotationAxis(() -> controller.getRightX() * (isRedAlliance() ? 1 : -1))
                 .scaleTranslation(OperatorConstants.TRANSLATION_SCALE)
+                .deadband(OperatorConstants.JOYSTICK_DEADBAND)
                 .robotRelative(() -> robotRelative)
                 .allianceRelativeControl(() -> !robotRelative);
 
@@ -43,21 +43,21 @@ public class DriverInput {
         drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveAngularVelocity));
 
         // if (RobotBase.isSimulation()) {
-        //     drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveDirectAngleKeyboard));
+        // drivebase.setDefaultCommand(drivebase.driveFieldOriented(driveDirectAngleKeyboard));
 
-        //     Pose2d target = new Pose2d(new Translation2d(1, 4),
-        //     Rotation2d.fromDegrees(90));
-        //     // drivebase.getSwerveDrive().field.getObject("targetPose").setPose(target);
-        //     driveDirectAngleKeyboard.driveToPose(() -> target,
-        //     new ProfiledPIDController(5, 0, 0, new Constraints(5, 2)),
-        //     new ProfiledPIDController(5, 0, 0,
-        //     new Constraints(Units.degreesToRadians(360), Units.degreesToRadians(180))));
+        // Pose2d target = new Pose2d(new Translation2d(1, 4),
+        // Rotation2d.fromDegrees(90));
+        // // drivebase.getSwerveDrive().field.getObject("targetPose").setPose(target);
+        // driveDirectAngleKeyboard.driveToPose(() -> target,
+        // new ProfiledPIDController(5, 0, 0, new Constraints(5, 2)),
+        // new ProfiledPIDController(5, 0, 0,
+        // new Constraints(Units.degreesToRadians(360), Units.degreesToRadians(180))));
 
-        //     controller.start().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
-        //     controller.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
-        //     controller.button(2).whileTrue(Commands.runEnd(() ->
-        //     driveDirectAngleKeyboard.driveToPoseEnabled(true),
-        //     () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
+        // controller.start().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
+        // controller.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
+        // controller.button(2).whileTrue(Commands.runEnd(() ->
+        // driveDirectAngleKeyboard.driveToPoseEnabled(true),
+        // () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
         // }
 
         if (DriverStation.isTest()) {
@@ -70,15 +70,17 @@ public class DriverInput {
             controller.start().onTrue(Commands.runOnce(drivebase::zeroGyro));
             controller.back().whileTrue(Commands.none());
 
-            // controller.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly())
+            // controller.leftBumper().whileTrue(Commands.runOnce(drivebase::lock,
+            // drivebase).repeatedly())
             controller.leftBumper().whileTrue(new AutoCenter(drivebase));
             controller.rightBumper().onTrue(Commands.runOnce(() -> {
                 recordTelemetry();
                 robotRelative = !robotRelative;
             }));
-        controller.a()
-    .onTrue(Commands.runOnce(() -> drivebase.setHalfSpeed(true)))
-    .onFalse(Commands.runOnce(() -> drivebase.setHalfSpeed(false)));
+
+            controller.leftTrigger()
+                    .onTrue(Commands.runOnce(() -> drivebase.setHalfSpeed(true)))
+                    .onFalse(Commands.runOnce(() -> drivebase.setHalfSpeed(false)));
         }
     }
 }

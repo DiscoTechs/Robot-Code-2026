@@ -107,7 +107,7 @@ public final class Constants {
         public static final int INDEXER_MOTOR_CAN_ID = 6; 
     }
     public static class IntakeConstants{
-        public static final int INTAKE_PIVOT_CAN_ID = 10;
+        public static final int INTAKE_SLIDE_CAN_ID = 3; // change later to 10 
         public static final int INTAKE_CAN_ID = 11; // change later mabye
     }
     public static class KickerConstants{

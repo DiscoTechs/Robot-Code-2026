@@ -30,7 +30,7 @@ import frc.robot.inputs.DriverInput;
 import frc.robot.inputs.OperatorInput;
 // import frc.robot.inputs.OperatorInput;
 import frc.robot.subsystems.IndexerSubsystem;
-import frc.robot.subsystems.IntakePivotSubsystem;
+import frc.robot.subsystems.IntakeSlideSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.OperatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -50,12 +50,12 @@ public class RobotContainer {
 
     private boolean SHOOTER_ENABLED = true;
     private boolean INDEXER_ENABLED = true;
-    private boolean INTAKE_PIVOT_ENABLED = true;
+    private boolean INTAKE_SLIDE_ENABLED = true;
     private boolean INTAKE_ENABLED = true;
 
     private ShooterSubsystem shooter;
     private IndexerSubsystem indexer;
-    private IntakePivotSubsystem intakePivot;
+    private IntakeSlideSubsystem intakeSlide;
     private IntakeSubsystem intake;
 
     private final OperatorSubsystem operatorSubsystem;
@@ -95,11 +95,11 @@ public class RobotContainer {
 
       
         try {
-            this.intakePivot = INTAKE_PIVOT_ENABLED ? new IntakePivotSubsystem() : null;
+            this.intakeSlide = INTAKE_SLIDE_ENABLED ? new IntakeSlideSubsystem() : null;
         } catch (Error err) {
-            this.intakePivot = null;
+            this.intakeSlide = null;
 
-            System.out.println("WARNING: IntakePivot failed to init.");
+            System.out.println("WARNING: IntakeSlide failed to init.");
             System.out.println(err);
         }
 
@@ -112,7 +112,7 @@ public class RobotContainer {
             System.out.println(err);
         }
 
-        this.operatorSubsystem = new OperatorSubsystem( indexer, shooter, intakePivot, intake);
+        this.operatorSubsystem = new OperatorSubsystem( indexer, shooter, intakeSlide, intake);
 
         // Setup Inputs
         this.driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
@@ -141,9 +141,11 @@ public class RobotContainer {
         autoChooser.addOption("Drive Backward", drivebase.driveBackwards().withTimeout(3));
         autoChooser.addOption("Rotate 45", new RotateCommand(drivebase));
 
+        RobotModeTriggers.teleop().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
         if (autoChooser.get() != null) {
             RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
         }
+
 
         int[] tags = { 16, 32 };
         NamedCommands.registerCommand("climbDriveToTarget", new DriveToTarget(drivebase, tags));

@@ -64,14 +64,14 @@ public class OperatorInput {
 
        
 
-        if (operator.intakepivot != null) {
+        if (operator.intakeSlide != null) {
             controller.y()
-                    .whileTrue(operator.intakepivot.forward())
-                    .onFalse(operator.intakepivot.stop());
+                    .whileTrue(operator.intakeSlide.forward())
+                    .onFalse(operator.intakeSlide.stop());
 
             controller.x()
-                    .whileTrue(operator.intakepivot.back())
-                    .onFalse(operator.intakepivot.stop());
+                    .whileTrue(operator.intakeSlide.back())
+                    .onFalse(operator.intakeSlide.stop());
         }
 
         if (operator.indexer != null && operator.intake != null) {

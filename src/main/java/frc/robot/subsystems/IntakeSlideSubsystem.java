@@ -20,6 +20,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,15 +41,28 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class IntakePivotSubsystem extends SubsystemBase {
-    private SmartMotorController smctl;
-    private Pivot intakepivot;
-    // private AnalogInput abEncoder;
-    private TalonSRX motor;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.hardware.TalonFX;
 
-    public IntakePivotSubsystem() {
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class IntakeSlideSubsystem extends SubsystemBase {
+    // private SmartMotorController smctl;
+    // private Pivot intakeSlide;
+    // private AnalogInput abEncoder;
+    private TalonFX motor;
+
+    private final DigitalInput inside = new DigitalInput(0);
+    private final DigitalInput outside = new DigitalInput(1);
+
+    public IntakeSlideSubsystem() {
         // abEncoder = new AnalogInput(3); // TODO: Set Absolute Encoder ID
-        motor = new TalonSRX(IntakeConstants.INTAKE_PIVOT_CAN_ID);
+        motor = new TalonFX(IntakeConstants.INTAKE_SLIDE_CAN_ID, new CANBus("CANivore 1"));
 
         // motor.configAllSettings(new TalonSRXConfiguration().)
 
@@ -72,22 +86,26 @@ public class IntakePivotSubsystem extends SubsystemBase {
     }
 
     public Command forward() {
-        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, 0.35));
+        return Commands.run(
+            () -> motor.set(0.25), this)
+                .until(() -> !outside.get())
+                .andThen(() -> motor.set(0));
     }
 
     public Command back() {
-        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, -0.30));
+        return Commands.run(() -> motor.set(-0.25), this)
+                .until(() -> !inside.get())
+                .andThen(() -> motor.set(0));
     }
 
     public Command stop() {
-        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, 0));
+        return Commands.runOnce(() -> motor.set( 0), this);
     }
 
-    // public void periodic(){
-    // if (intakepivot != null) {
-    // // System.out.println("intakePivot: E: " + abEncoder.getValue() + "ANGLE: " +
-    // intakepivot.getAngle().in(Degrees));
-    // intakepivot.updateTelemetry();
-    // }
-    // }
+//     public void periodic(){
+//     if (intakeSlide != null) {
+// System.out.println("Outside switch = " + outside.get());    intakeSlide.getAngle().in(Degrees);
+//     intakeSlide.updateTelemetry();
+//     }
+//     }
 }
