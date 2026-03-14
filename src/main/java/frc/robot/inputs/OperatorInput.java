@@ -66,11 +66,11 @@ public class OperatorInput {
 
         if (operator.intakeSlide != null) {
             controller.y()
-                    .whileTrue(operator.intakeSlide.forward())
+                    .whileTrue(operator.intakeSlide.extend())
                     .onFalse(operator.intakeSlide.stop());
 
             controller.x()
-                    .whileTrue(operator.intakeSlide.back())
+                    .whileTrue(operator.intakeSlide.retract())
                     .onFalse(operator.intakeSlide.stop());
         }
 

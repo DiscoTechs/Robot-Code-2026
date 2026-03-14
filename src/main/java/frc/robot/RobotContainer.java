@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-
 import java.io.File;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -15,16 +12,11 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.DriveToTarget;
 import frc.robot.commands.RotateCommand;
 import frc.robot.inputs.DriverInput;
 import frc.robot.inputs.OperatorInput;
@@ -73,8 +65,6 @@ public class RobotContainer {
             DriverStation.silenceJoystickConnectionWarning(true);
         }
 
-      
-
         try {
             this.shooter = SHOOTER_ENABLED ? new ShooterSubsystem() : null;
         } catch (Error err) {
@@ -93,7 +83,6 @@ public class RobotContainer {
             System.out.println(err);
         }
 
-      
         try {
             this.intakeSlide = INTAKE_SLIDE_ENABLED ? new IntakeSlideSubsystem() : null;
         } catch (Error err) {
@@ -126,13 +115,6 @@ public class RobotContainer {
                 drivebase.driveBackwards().withTimeout(1).withName("Auto.driveBackwards"));
         NamedCommands.registerCommand("driveForwards",
                 drivebase.driveForward().withTimeout(2).withName("Auto.driveForwards"));
-        // climber.setDefaultCommand(climber.climbUp());
-
-        // Aliance
-        // onAllianceChanged(getAlliance());
-        // new Trigger(() -> getAlliance() != currentAlliance)
-        // .onTrue(Commands.runOnce(() ->
-        // onAllianceChanged(getAlliance())).ignoringDisable(true));
 
         // Setup Auto
         autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
@@ -146,9 +128,6 @@ public class RobotContainer {
             RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
         }
 
-
-        int[] tags = { 16, 32 };
-        NamedCommands.registerCommand("climbDriveToTarget", new DriveToTarget(drivebase, tags));
         // NamedCommands.registerCommand("shoot", Commands.parallel(
         // shooter.forward().asProxy(),
         // (new WaitCommand(0.5).andThen(kicker::forward)).asProxy()
@@ -158,8 +137,6 @@ public class RobotContainer {
         // ));
         NamedCommands.registerCommand("intake", intake.forward());
         NamedCommands.registerCommand("outake", intake.reverse());
-
-      
     }
 
     public Command getAutonomousCommand() {
@@ -177,8 +154,6 @@ public class RobotContainer {
     public void setMotorBrake(boolean brake) {
         drivebase.setMotorBrake(brake);
     }
-
-    
 
     // Alliance
     // private Alliance getAlliance() {
