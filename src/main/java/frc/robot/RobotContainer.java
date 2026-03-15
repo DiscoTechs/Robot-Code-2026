@@ -8,6 +8,7 @@ import java.io.File;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -137,6 +138,8 @@ public class RobotContainer {
         // ));
         NamedCommands.registerCommand("intake", intake.forward());
         NamedCommands.registerCommand("outake", intake.reverse());
+        NamedCommands.registerCommand("intakeSlideExtend", intakeSlide.extend());
+        NamedCommands.registerCommand("intakeSlideRetract", intakeSlide.retract());
     }
 
     public Command getAutonomousCommand() {

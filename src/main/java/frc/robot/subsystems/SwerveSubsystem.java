@@ -2,6 +2,19 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+//back left: drive 26, angle 23, encoder 0, offset 133
+//old back left: drive 21, angle 17, encoder 0, offset 133
+//front left: drive 17, angle 12, encoder 2, offset 21
+//old front left: drive 28, angle 2, encoder 2, offset 21
+//back right: drive 25, angle 9, encoder 1, offset 298
+//old back right: drive 23, angle 9, encoder 1, offset 298
+//front right: drive 3, angle 2, encoder 0, offset 165
+//old front right: drive 9, angle 26, encoder 0, offset 165
+
+
+
+
+
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;

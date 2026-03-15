@@ -19,7 +19,7 @@ public class OperatorSubsystem extends SubsystemBase {
     public AngularVelocity targetShooterSpeed = RPM.of(6000);
     public final Trigger isShooterAtSpeed;
 
-    public OperatorSubsystem( IndexerSubsystem ind, ShooterSubsystem shoot, IntakeSlideSubsystem intSlide, IntakeSubsystem intake) {
+    public OperatorSubsystem(IndexerSubsystem ind, ShooterSubsystem shoot, IntakeSlideSubsystem intSlide, IntakeSubsystem intake) {
         this.shooter = shoot;
         this.indexer = ind;
         this.intakeSlide = intSlide;
