@@ -7,25 +7,26 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class IntakeSlideSubsystem extends SubsystemBase {
     private final TalonFX motor;
 
-    private final DigitalInput inside = new DigitalInput(0);
-    private final DigitalInput outside = new DigitalInput(1);
+    private final DigitalInput outside = new DigitalInput(Constants.IntakeSlideConstants.OUTSIDE_LIMIT_SWITCH_DIO);
+    private final DigitalInput inside = new DigitalInput(Constants.IntakeSlideConstants.INSIDE_LIMIT_SWITCH_DIO);
 
     public IntakeSlideSubsystem() {
-        motor = new TalonFX(3, new CANBus("CANivore 1"));
+        motor = new TalonFX(Constants.IntakeSlideConstants.MOTOR_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
     }
 
     public Command extend() {
-        return Commands.run(() -> motor.set(!outside.get() ? 0 : 0.25), this)
+        return Commands.run(() -> motor.set(!outside.get() ? 0 : Constants.IntakeSlideConstants.SLIDE_SPEED), this)
             .until(() -> !outside.get())
             .andThen(stop());
     }
 
     public Command retract() {
-        return Commands.run(() -> motor.set(!inside.get() ? 0 : -0.25), this)
+        return Commands.run(() -> motor.set(!inside.get() ? 0 : -Constants.IntakeSlideConstants.SLIDE_SPEED), this)
                 .until(() -> !inside.get())
                 .andThen(stop());
     }

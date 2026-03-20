@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants;
 import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -30,8 +31,6 @@ public class IndexerSubsystem extends SubsystemBase {
     private SmartMotorController smctl;
     private FlyWheel indexer;
 
-    private final double DEFAULT_SPEED = 1.00;
-
     public IndexerSubsystem() {
         SmartMotorControllerConfig config = new SmartMotorControllerConfig(this)
                 .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
@@ -42,7 +41,7 @@ public class IndexerSubsystem extends SubsystemBase {
                 .withTelemetry("IndexerMotor", TelemetryVerbosity.HIGH);
 
         this.smctl = new TalonFXWrapper(
-                new TalonFX(IndexerConstants.INDEXER_MOTOR_CAN_ID, new CANBus("CANivore 1")),
+                new TalonFX(IndexerConstants.MOTOR_CAN_ID, new CANBus(Constants.CANIVORE_NAME)),
                 DCMotor.getKrakenX60(1), config);
         this.indexer = new FlyWheel(new FlyWheelConfig(smctl)
                 .withDiameter(Inches.of(1.5))
@@ -51,20 +50,16 @@ public class IndexerSubsystem extends SubsystemBase {
                 .withTelemetry("IndexerWheel", TelemetryVerbosity.HIGH));
     }
 
-    public Command forward() {
-        return indexer.set(DEFAULT_SPEED);
+    public Command index() {
+        return indexer.set(Constants.IndexerConstants.INDEXER_SPEED);
     }
 
-    public Command reverse() {
-        return indexer.set(-DEFAULT_SPEED);
-    }
-
-    public Command setSpeed(double speed) {
-        return indexer.set(speed);
+    public Command outtake() {
+        return indexer.set(-Constants.IndexerConstants.INDEXER_SPEED);
     }
 
     public Command stop() {
-        return indexer.set(0.0);
+        return indexer.set(0);
     }
 
     @Override

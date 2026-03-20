@@ -1,29 +1,25 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private final double SPEED = 0.8;
     private TalonSRX motor;
 
     public IntakeSubsystem() {
-        this.motor = new TalonSRX(IntakeConstants.INTAKE_CAN_ID); // change to what it actucaly is
+        this.motor = new TalonSRX(IntakeConstants.MOTOR_CAN_ID); // change to what it actucaly is
     }
 
     public Command forward() {
-        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, -SPEED));
+        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, -IntakeConstants.INTAKE_SPEED));
     }
     
-    // we prob don't need this but just in case
     public Command reverse() {
-        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, SPEED));
+        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, IntakeConstants.INTAKE_SPEED));
     }
 
     public Command stop() {

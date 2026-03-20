@@ -1,29 +1,29 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
-import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.hardware.TalonFX;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ShooterConstants;
-import yams.gearing.GearBox;
-import yams.gearing.MechanismGearing;
-import yams.mechanisms.config.FlyWheelConfig;
-import yams.mechanisms.velocity.FlyWheel;
-import yams.motorcontrollers.SmartMotorController;
-import yams.motorcontrollers.SmartMotorControllerConfig;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
+import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.remote.TalonFXWrapper;
+import yams.motorcontrollers.SmartMotorController;
+import yams.mechanisms.config.FlyWheelConfig;
+import yams.mechanisms.velocity.FlyWheel;
+import yams.gearing.MechanismGearing;
+import yams.gearing.GearBox;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.CANBus;
 
 public class ShooterSubsystem extends SubsystemBase {
     private SmartMotorController smctl;
@@ -40,7 +40,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 .withClosedLoopController(0.01, 0.0, 0.0, RPM.of(6000), RotationsPerSecondPerSecond.of(4500))
                 .withTelemetry("Shooter", TelemetryVerbosity.HIGH);
 
-        motor = new TalonFX(ShooterConstants.SHOOTER_MOTOR_CAN_ID, new CANBus("CANivore 1"));
+        motor = new TalonFX(Constants.ShooterConstants.MOTOR_CAN_ID, new CANBus(Constants.CANIVORE_NAME));
         smctl = new TalonFXWrapper(motor, DCMotor.getKrakenX60(1), config);
         shooter = new FlyWheel(
                 new FlyWheelConfig(smctl)
@@ -50,41 +50,15 @@ public class ShooterSubsystem extends SubsystemBase {
                         .withTelemetry("Indexer", TelemetryVerbosity.HIGH));
     }
 
-    public Command setTarget(AngularVelocity target) {
-        return shooter.setSpeed(target);
-    }
+    public AngularVelocity getSpeed() { return shooter.getSpeed(); }
+    public Command setShooterSpeed(AngularVelocity speed) { return shooter.run(speed); }
+    public Command stop() { return shooter.set(0); }
 
-    public Command forward() {
-        return shooter.set(1);
-    }
-
-    public Command reverse() {
-        return shooter.set(-0.5);
-    }
-
-    public Command stop() {
-        return shooter.set(0);
-    }
-
-    public Command set(double speed) {
-        return shooter.set(speed);
-    }
-
-    public AngularVelocity getSpeed() {
-        return shooter.getSpeed();
-    }
+    public Command set(double speed) { return shooter.set(speed); }
 
     @Override
-    public void periodic() {
-        if (shooter != null) {
-            shooter.updateTelemetry();
-        }
-    }
+    public void periodic() { shooter.updateTelemetry(); }
 
     @Override
-    public void simulationPeriodic() {
-        if (shooter != null) {
-            shooter.simIterate();
-        }
-    }
+    public void simulationPeriodic() { shooter.simIterate(); }
 }
