@@ -8,7 +8,6 @@ import java.io.File;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -28,6 +27,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.OperatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.ConveyorSubsystem;
 import swervelib.SwerveDrive;
 
 /**
@@ -45,10 +45,12 @@ public class RobotContainer {
     private boolean INDEXER_ENABLED = true;
     private boolean INTAKE_SLIDE_ENABLED = true;
     private boolean INTAKE_ENABLED = true;
+    private boolean CONVEYOR_ENABLED = true;
 
+    private IntakeSlideSubsystem intakeSlide;
+    private ConveyorSubsystem conveyor;
     private ShooterSubsystem shooter;
     private IndexerSubsystem indexer;
-    private IntakeSlideSubsystem intakeSlide;
     private IntakeSubsystem intake;
 
     private final OperatorSubsystem operatorSubsystem;
@@ -102,7 +104,16 @@ public class RobotContainer {
             System.out.println(err);
         }
 
-        this.operatorSubsystem = new OperatorSubsystem( indexer, shooter, intakeSlide, intake);
+        try {
+            this.conveyor = CONVEYOR_ENABLED ? new ConveyorSubsystem() : null;
+        } catch (Error err){
+            this.conveyor = null;
+
+            System.out.println("WARNING: Conveyor failed to init.");
+            System.out.println(err);
+        }
+
+        this.operatorSubsystem = new OperatorSubsystem(indexer, shooter, intakeSlide, intake, conveyor);
 
         // Setup Inputs
         this.driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
@@ -124,6 +135,7 @@ public class RobotContainer {
         autoChooser.addOption("Drive Backward", drivebase.driveBackwards().withTimeout(3));
         autoChooser.addOption("Rotate 45", new RotateCommand(drivebase));
 
+        RobotModeTriggers.disabled().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
         RobotModeTriggers.teleop().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
         if (autoChooser.get() != null) {
             RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
