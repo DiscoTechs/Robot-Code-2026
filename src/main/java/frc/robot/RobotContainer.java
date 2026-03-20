@@ -133,7 +133,7 @@ public class RobotContainer {
         autoChooser.addDefaultOption("Do Nothing", Commands.none());
         autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(3));
         autoChooser.addOption("Drive Backward", drivebase.driveBackwards().withTimeout(3));
-        autoChooser.addOption("Rotate 45", new RotateCommand(drivebase));
+        autoChooser.addOption("Rotate 90", new RotateCommand(drivebase));
 
         RobotModeTriggers.disabled().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
         RobotModeTriggers.teleop().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
@@ -169,45 +169,4 @@ public class RobotContainer {
     public void setMotorBrake(boolean brake) {
         drivebase.setMotorBrake(brake);
     }
-
-    // Alliance
-    // private Alliance getAlliance() {
-    // return DriverStation.getAlliance().orElse(Alliance.Red);
-    // }
-
-    // private boolean isInAllianceZone() {
-    // Alliance alliance = getAlliance();
-    // Distance blueZone = Inches.of(182);
-    // Distance redZone = Inches.of(469);
-
-    // if (alliance == Alliance.Blue &&
-    // drivebase.getPose().getMeasureX().lt(blueZone)) {
-    // return true;
-    // } else if (alliance == Alliance.Red &&
-    // drivebase.getPose().getMeasureX().gt(redZone)) {
-    // return true;
-    // }
-
-    // return false;
-    // }
-
-    // private boolean isOnAllianceOutpostSide() {
-    // Alliance alliance = getAlliance();
-    // Distance midLine = Inches.of(158.84375);
-
-    // if (alliance == Alliance.Blue &&
-    // drivebase.getPose().getMeasureY().lt(midLine)) {
-    // return true;
-    // } else if (alliance == Alliance.Red &&
-    // drivebase.getPose().getMeasureY().gt(midLine)) {
-    // return true;
-    // }
-
-    // return false;
-    // }
-
-    // private void onAllianceChanged(Alliance alliance) {
-    // currentAlliance = alliance;
-    // System.out.println("Alliance changed to: " + alliance);
-    // }
 }
