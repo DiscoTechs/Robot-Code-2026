@@ -393,6 +393,8 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param enabled True = half speed, False = full speed
    */
   public void setHalfSpeed(boolean enabled) {
+    Logger.recordOutput("SwerveSpeedHalf", enabled);
+
     if (enabled) {
       speedMultiplier = 0.5;
     } else {

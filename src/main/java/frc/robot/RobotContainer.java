@@ -148,18 +148,21 @@ public class RobotContainer {
         // // new
         // WaitCommand(3).andThen(indexer::stop).andThen(kicker::stop).andThen(shooter::stop))
         // ));
-        NamedCommands.registerCommand("intake", Commands.parallel(
-            intake.forward().asProxy(),
-            conveyor.forward().asProxy()
-        ));
 
-        NamedCommands.registerCommand("outake", Commands.parallel(
-            intake.reverse().asProxy(),
-            conveyor.reverse().asProxy()
-        ));
+        if (intake != null && conveyor != null) {
+            NamedCommands.registerCommand("intake", Commands.parallel(
+                    intake.forward().asProxy(),
+                    conveyor.forward().asProxy()));
 
-        NamedCommands.registerCommand("intakeSlideExtend", intakeSlide.extend());
-        NamedCommands.registerCommand("intakeSlideRetract", intakeSlide.retract());
+            NamedCommands.registerCommand("outake", Commands.parallel(
+                    intake.reverse().asProxy(),
+                    conveyor.reverse().asProxy()));
+        }
+
+        if (intakeSlide != null) {
+            NamedCommands.registerCommand("intakeSlideExtend", intakeSlide.extend());
+            NamedCommands.registerCommand("intakeSlideRetract", intakeSlide.retract());
+        }
     }
 
     public Command getAutonomousCommand() {

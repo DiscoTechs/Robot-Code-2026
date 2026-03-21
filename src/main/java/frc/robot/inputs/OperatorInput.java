@@ -21,7 +21,7 @@ public class OperatorInput {
             controller.leftTrigger()
                     .whileTrue(operator.intake.forward())
                     .onFalse(operator.intake.stop());
-            controller.x()
+            controller.leftBumper()
                     .whileTrue(operator.intake.reverse())
                     .onFalse(operator.intake.stop());
         }
@@ -35,16 +35,16 @@ public class OperatorInput {
                     operator.shooter.set(0).execute();
                 } else if (0.20 <= trig && trig < 0.50) {
                     Logger.recordOutput("ShooterSpeed", "35%");
-                    operator.shooter.set(0.35).execute();
+                    operator.shooter.set(-0.35).execute();
                 } else if (0.50 <= trig && trig < 0.75) {
                     Logger.recordOutput("ShooterSpeed", "60%");
-                    operator.shooter.set(0.6).execute();
+                    operator.shooter.set(-0.6).execute();
                 } else if (0.75 <= trig && trig < 0.90) {
                     Logger.recordOutput("ShooterSpeed", "75%");
-                    operator.shooter.set(0.75).execute();
+                    operator.shooter.set(-0.75).execute();
                 } else if (0.90 <= trig && trig < 1.0) {
                     Logger.recordOutput("ShooterSpeed", "100%");
-                    operator.shooter.set(1).execute();
+                    operator.shooter.set(-1).execute();
                 }
             }, operator.shooter));
         }
@@ -72,6 +72,10 @@ public class OperatorInput {
         if (operator.indexer != null) {
             controller.b()
                     .whileTrue(operator.indexer.index())
+                    .onFalse(operator.indexer.stop());
+
+            controller.x()
+                    .whileTrue(operator.indexer.outtake())
                     .onFalse(operator.indexer.stop());
         }
     }

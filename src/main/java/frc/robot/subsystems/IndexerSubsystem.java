@@ -48,11 +48,11 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     public Command index() {
-        return indexer.set(Constants.IndexerConstants.INDEXER_SPEED);
+        return indexer.set(-Constants.IndexerConstants.INDEXER_SPEED);
     }
 
     public Command outtake() {
-        return indexer.set(-Constants.IndexerConstants.INDEXER_SPEED);
+        return indexer.set(Constants.IndexerConstants.INDEXER_SPEED);
     }
 
     public Command stop() {

@@ -25,7 +25,6 @@ public class IntakeSlideSubsystem extends SubsystemBase {
             .andThen(stop());
     }
 
-//robot=work  win=true   brohan=cool
     public Command retract() {
         return Commands.run(() -> motor.set(!inside.get() ? 0 : -Constants.IntakeSlideConstants.SLIDE_SPEED), this)
                 .until(() -> !inside.get())
@@ -38,6 +37,6 @@ public class IntakeSlideSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // System.out.println("I: " + inside.get() + " O: " + outside.get());
+        System.out.println("I: " + !inside.get() + " O: " + !outside.get());
     }
 }
