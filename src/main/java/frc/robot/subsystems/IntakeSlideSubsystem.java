@@ -25,6 +25,7 @@ public class IntakeSlideSubsystem extends SubsystemBase {
             .andThen(stop());
     }
 
+//robot=work  win=true   brohan=cool
     public Command retract() {
         return Commands.run(() -> motor.set(!inside.get() ? 0 : -Constants.IntakeSlideConstants.SLIDE_SPEED), this)
                 .until(() -> !inside.get())

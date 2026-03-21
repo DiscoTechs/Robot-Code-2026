@@ -32,7 +32,7 @@ import swervelib.math.Matter;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(112.9);
+    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(107.7);
     public static final Matter CHASSIS_MATTER = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)),
             ROBOT_MASS_KG);
     public static final double MAX_LINEAR_SPEED_MPS = Units.feetToMeters(14.5); // Robot maximum speed (m/s). Used to
@@ -90,19 +90,19 @@ public final class Constants {
     }
 
     public static class ShooterConstants {
-        public static final int MOTOR_CAN_ID = 9; // make 2 for actual robot
+        public static final int MOTOR_CAN_ID = 9;
     }
 
     public static class IndexerConstants {
         public static final double INDEXER_SPEED = 0.8;
         public static final int MOTOR_CAN_ID = 5;
-    }
+    }   
 
     public static class IntakeSlideConstants {
         public static final int OUTSIDE_LIMIT_SWITCH_DIO = 1;
         public static final int INSIDE_LIMIT_SWITCH_DIO = 0;
-        public static final double SLIDE_SPEED = 0.5;
-        public static final int MOTOR_CAN_ID = 3;
+        public static final double SLIDE_SPEED = 0.15; // use 0.5
+        public static final int MOTOR_CAN_ID = 8;
     }
 
     public static class IntakeConstants {

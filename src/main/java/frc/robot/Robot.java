@@ -4,24 +4,19 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.util.CommandsLogging;
 import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.util.CommandsLogging;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
   private static Robot instance;
-  private SimulatedArena arena;
+  // private SimulatedArena arena;
   private Timer disabledTimer;
-
-  // private CommandXboxController controller = new CommandXboxController(0);
-  // private ShooterSubsystem shooter = new ShooterSubsystem();
-  // private ClimberSubsystem climber = new ClimberSubsystem();
 
   public Robot() {
     // Setup Logging
@@ -52,8 +47,7 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void robotInit() {
-  }
+  public void robotInit() {}
 
   @Override
   public void robotPeriodic() {
@@ -61,10 +55,10 @@ public class Robot extends LoggedRobot {
     CommandsLogging.logRunningCommands();
     CommandsLogging.logRequiredSubsystems();
 
-    if (Robot.isSimulation()) {
-      Pose3d[] fuelPoses = arena.getGamePiecesArrayByType("Fuel");
-      Logger.recordOutput("FieldSimulation/FuelPoses", fuelPoses);
-    }
+    // if (Robot.isSimulation()) {
+    //   Pose3d[] fuelPoses = arena.getGamePiecesArrayByType("Fuel");
+    //   Logger.recordOutput("FieldSimulation/FuelPoses", fuelPoses);
+    // }
 
     // Logger.recordOutput("FieldSimulation/RobotPose", m_robotContainer.getRobotPose());
     // Logger.recordOutput("FieldSimulation/TargetPose", m_robotContainer.getSwerveDrive().field.getObject("targetPose").getPose());
@@ -80,7 +74,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     if (disabledTimer.hasElapsed(Constants.WHEEL_LOCK_TIME_SEC)) {
-    //   m_robotContainer.setMotorBrake(false);
+      // m_robotContainer.setMotorBrake(false);
       disabledTimer.stop();
       disabledTimer.reset();
     }
@@ -110,8 +104,7 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {
@@ -119,20 +112,20 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
   @Override
   public void simulationInit() {
     SimulatedArena.getInstance().shutDown();
     // SimulatedArena.overrideInstance(new Arena2026Rebuilt());
 
-    arena = SimulatedArena.getInstance();
+    // arena = SimulatedArena.getInstance();
     // arena.addDriveTrainSimulation(m_robotContainer.getSwerveDrive().getMapleSimDrive().get());
   }
 
-  @Override
-  public void simulationPeriodic() {
-    arena.simulationPeriodic();
-  }
+ // robot= get a lot of points in auto
+  // @Override
+  // public void simulationPeriodic() {
+  //   arena.simulationPeriodic();
+  // }
 }

@@ -106,7 +106,7 @@ public class RobotContainer {
 
         try {
             this.conveyor = CONVEYOR_ENABLED ? new ConveyorSubsystem() : null;
-        } catch (Error err){
+        } catch (Error err) {
             this.conveyor = null;
 
             System.out.println("WARNING: Conveyor failed to init.");
@@ -116,10 +116,10 @@ public class RobotContainer {
         this.operatorSubsystem = new OperatorSubsystem(indexer, shooter, intakeSlide, intake, conveyor);
 
         // Setup Inputs
-        this.driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
+        driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
         driverInput.init(); // Configure our controller to send input to swervedrive
 
-        this.operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, operatorSubsystem);
+        operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, operatorSubsystem);
         operatorInput.init(); // Configure our controller to send input to operator subsystems
 
         // Register Commands
@@ -148,8 +148,16 @@ public class RobotContainer {
         // // new
         // WaitCommand(3).andThen(indexer::stop).andThen(kicker::stop).andThen(shooter::stop))
         // ));
-        NamedCommands.registerCommand("intake", intake.forward());
-        NamedCommands.registerCommand("outake", intake.reverse());
+        NamedCommands.registerCommand("intake", Commands.parallel(
+            intake.forward().asProxy(),
+            conveyor.forward().asProxy()
+        ));
+
+        NamedCommands.registerCommand("outake", Commands.parallel(
+            intake.reverse().asProxy(),
+            conveyor.reverse().asProxy()
+        ));
+
         NamedCommands.registerCommand("intakeSlideExtend", intakeSlide.extend());
         NamedCommands.registerCommand("intakeSlideRetract", intakeSlide.retract());
     }

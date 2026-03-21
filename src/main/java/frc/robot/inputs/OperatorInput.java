@@ -1,10 +1,7 @@
 package frc.robot.inputs;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import static edu.wpi.first.units.Units.Degrees;
 
 import org.littletonrobotics.junction.Logger;
 

@@ -2,18 +2,14 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-//back left: drive 26, angle 23, encoder 0, offset 133
+//back left: drive 26, angle 23, encoder 0, offset 291
 //old back left: drive 21, angle 17, encoder 0, offset 133
-//front left: drive 17, angle 12, encoder 2, offset 21
+//front left: drive 17, angle 12, encoder 2, offset 73
 //old front left: drive 28, angle 2, encoder 2, offset 21
-//back right: drive 25, angle 9, encoder 1, offset 298
+//back right: drive 25, angle 9, encoder 1, offset 264
 //old back right: drive 23, angle 9, encoder 1, offset 298
-//front right: drive 3, angle 2, encoder 0, offset 165
+//front right: drive 3, angle 2, encoder 0, offset 212
 //old front right: drive 9, angle 26, encoder 0, offset 165
-
-
-
-
 
 package frc.robot.subsystems;
 
@@ -33,9 +29,7 @@ import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
-import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
@@ -76,8 +70,6 @@ import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
-
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class SwerveSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
@@ -162,7 +154,7 @@ public class SwerveSubsystem extends SubsystemBase {
     CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
     if (Constants.Limelight.ENABLED) {
-      limelight = new Limelight("limelight-two");
+      limelight = new Limelight("limelight");
       limelight.getSettings()
           .withLimelightLEDMode(LEDMode.PipelineControl)
           .withCameraOffset(Constants.Limelight.ROBOT_TO_CAMERA_POSE)

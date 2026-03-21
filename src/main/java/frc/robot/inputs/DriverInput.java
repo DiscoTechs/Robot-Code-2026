@@ -8,7 +8,6 @@ import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.commands.AutoCenter;
-import frc.robot.commands.DriveToTarget;
 import swervelib.SwerveInputStream;
 
 public class DriverInput {
