@@ -30,9 +30,9 @@ public class DriverInput {
 
     public void init() {
         SwerveInputStream driveAngularVelocity = SwerveInputStream
-                .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * (isRedAlliance() ? 1 : 1),
+                .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * (isRedAlliance() ? -1 : 1),
                         () -> controller.getLeftX() * (isRedAlliance() ? -1 : 1))
-                .withControllerRotationAxis(() -> controller.getRightX() * (isRedAlliance() ? 1 : 1))
+                .withControllerRotationAxis(() -> controller.getRightX() * (isRedAlliance() ? 1 : -1))
                 .scaleTranslation(OperatorConstants.TRANSLATION_SCALE)
                 .deadband(OperatorConstants.JOYSTICK_DEADBAND)
                 .robotRelative(() -> robotRelative)
@@ -77,9 +77,9 @@ public class DriverInput {
                 robotRelative = !robotRelative;
             }));
 
-            controller.leftTrigger()
-                    .onTrue(Commands.runOnce(() -> drivebase.setHalfSpeed(true)))
-                    .onFalse(Commands.runOnce(() -> drivebase.setHalfSpeed(false)));
+            // controller.leftTrigger()
+            //         .onTrue(Commands.runOnce(() -> drivebase.setHalfSpeed(true)))
+            //         .onFalse(Commands.runOnce(() -> drivebase.setHalfSpeed(false)));
         }
     }
 }
