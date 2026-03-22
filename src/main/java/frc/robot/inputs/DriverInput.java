@@ -13,7 +13,9 @@ import swervelib.SwerveInputStream;
 public class DriverInput {
     public static CommandXboxController controller;
     private SwerveSubsystem drivebase;
+    
     private boolean robotRelative = false;
+    private int pipelineIndex = 0;
 
     public DriverInput(int ctlrPort, SwerveSubsystem ss) {
         controller = new CommandXboxController(ctlrPort);
@@ -30,9 +32,8 @@ public class DriverInput {
 
     public void init() {
         SwerveInputStream driveAngularVelocity = SwerveInputStream
-                .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * (isRedAlliance() ? -1 : 1),
-                        () -> controller.getLeftX() * (isRedAlliance() ? -1 : 1))
-                .withControllerRotationAxis(() -> controller.getRightX() * (isRedAlliance() ? 1 : -1))
+                .of(drivebase.getSwerveDrive(), () -> controller.getLeftY() * -1, () -> controller.getLeftX() * -1)
+                .withControllerRotationAxis(() -> controller.getRightX() * -1)
                 .scaleTranslation(OperatorConstants.TRANSLATION_SCALE)
                 .deadband(OperatorConstants.JOYSTICK_DEADBAND)
                 .robotRelative(() -> robotRelative)
@@ -66,7 +67,7 @@ public class DriverInput {
             controller.leftBumper().onTrue(Commands.none());
             controller.rightBumper().onTrue(Commands.none());
         } else {
-            controller.start().onTrue(Commands.runOnce(drivebase::zeroGyro));
+            controller.start().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
             controller.back().whileTrue(Commands.none());
 
             // controller.leftBumper().whileTrue(Commands.runOnce(drivebase::lock,
@@ -76,6 +77,10 @@ public class DriverInput {
                 recordTelemetry();
                 robotRelative = !robotRelative;
             }));
+
+            controller.rightTrigger()
+                .whileTrue(Commands.runOnce(() -> drivebase.getLimelight().getSettings().withPipelineIndex(1).save()))
+                .onFalse(Commands.runOnce(() -> drivebase.getLimelight().getSettings().withPipelineIndex(0).save()));
 
             // controller.leftTrigger()
             //         .onTrue(Commands.runOnce(() -> drivebase.setHalfSpeed(true)))
