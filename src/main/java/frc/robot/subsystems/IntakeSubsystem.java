@@ -14,12 +14,21 @@ public class IntakeSubsystem extends SubsystemBase {
         this.motor = new TalonSRX(IntakeConstants.MOTOR_CAN_ID); // change to what it actucaly is
     }
 
+<<<<<<< HEAD
     public Command reverse() {
         return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, IntakeConstants.INTAKE_SPEED));
     }
     
     public Command forward() {
         return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, -IntakeConstants.INTAKE_SPEED));
+=======
+    public Command forward() {
+        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, -IntakeConstants.INTAKE_SPEED));
+    }
+    
+    public Command reverse() {
+        return Commands.runOnce(() -> motor.set(TalonSRXControlMode.PercentOutput, IntakeConstants.INTAKE_SPEED));
+>>>>>>> 4ea2d9ed6e338f592d3380dd59705d423350f4fd
     }
 
     public Command stop() {
