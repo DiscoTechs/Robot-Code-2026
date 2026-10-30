@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.util.CommandsLogging;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.cameraserver.CameraServer;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -47,7 +48,10 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void robotInit() {}
+  public void robotInit() {
+        CameraServer.startAutomaticCapture();
+
+  }
 
   @Override
   public void robotPeriodic() {

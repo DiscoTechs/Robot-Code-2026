@@ -20,13 +20,13 @@ public class IntakeSlideSubsystem extends SubsystemBase {
     }
 
     public Command extend() {
-        return Commands.run(() -> motor.set(!outside.get() ? 0 : Constants.IntakeSlideConstants.SLIDE_SPEED), this)
+        return Commands.run(() -> motor.set(!outside.get() ? 0 : -Constants.IntakeSlideConstants.SLIDE_SPEED), this)
             .until(() -> !outside.get())
             .andThen(stop());
     }
 
     public Command retract() {
-        return Commands.run(() -> motor.set(!inside.get() ? 0 : -Constants.IntakeSlideConstants.SLIDE_SPEED), this)
+        return Commands.run(() -> motor.set(!inside.get() ? 0 : Constants.IntakeSlideConstants.SLIDE_SPEED), this)
                 .until(() -> !inside.get())
                 .andThen(stop());
     }

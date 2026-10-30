@@ -90,12 +90,12 @@ public final class Constants {
     }
 
     public static class ShooterConstants {
-        public static final int MOTOR_CAN_ID = 9;
+        public static final int MOTOR_CAN_ID = 2;
     }
 
     public static class IndexerConstants {
         public static final double INDEXER_SPEED = 0.8;
-        public static final int MOTOR_CAN_ID = 5;
+        public static final int MOTOR_CAN_ID = 4;
     }   
 
     public static class IntakeSlideConstants {
