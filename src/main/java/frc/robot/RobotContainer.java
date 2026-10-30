@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-
 import java.io.File;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -15,29 +12,22 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.DriveToTarget;
 import frc.robot.commands.RotateCommand;
 import frc.robot.inputs.DriverInput;
 import frc.robot.inputs.OperatorInput;
 // import frc.robot.inputs.OperatorInput;
-import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
-import frc.robot.subsystems.IntakePivotSubsystem;
+import frc.robot.subsystems.IntakeSlideSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.OperatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-// import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.ConveyorSubsystem;
 import swervelib.SwerveDrive;
 
 /**
@@ -51,21 +41,16 @@ import swervelib.SwerveDrive;
 public class RobotContainer {
     private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
-    private boolean CLIMBER_ENABLED = true;
     private boolean SHOOTER_ENABLED = true;
     private boolean INDEXER_ENABLED = true;
-    // private boolean TURRET_ENABLED = false;
-    private boolean KICKER_ENABLED = true;
-    private boolean INTAKE_PIVOT_ENABLED = true;
+    private boolean INTAKE_SLIDE_ENABLED = true;
     private boolean INTAKE_ENABLED = true;
+    private boolean CONVEYOR_ENABLED = true;
 
-    private ClimberSubsystem climber;
+    private IntakeSlideSubsystem intakeSlide;
+    private ConveyorSubsystem conveyor;
     private ShooterSubsystem shooter;
     private IndexerSubsystem indexer;
-    // private final TurretSubsystem turret = TURRET_ENABLED ? new TurretSubsystem()
-    // : null;
-    private KickerSubsystem kicker;
-    private IntakePivotSubsystem intakePivot;
     private IntakeSubsystem intake;
 
     private final OperatorSubsystem operatorSubsystem;
@@ -81,15 +66,6 @@ public class RobotContainer {
     public RobotContainer() {
         if (!Robot.isReal()) {
             DriverStation.silenceJoystickConnectionWarning(true);
-        }
-
-        try {
-            this.climber = CLIMBER_ENABLED ? new ClimberSubsystem() : null;
-        } catch (Error err) {
-            this.climber = null;
-
-            System.out.println("WARNING: Climber failed to init.");
-            System.out.println(err);
         }
 
         try {
@@ -111,20 +87,11 @@ public class RobotContainer {
         }
 
         try {
-            this.kicker = KICKER_ENABLED ? new KickerSubsystem() : null;
+            this.intakeSlide = INTAKE_SLIDE_ENABLED ? new IntakeSlideSubsystem() : null;
         } catch (Error err) {
-            this.kicker = null;
+            this.intakeSlide = null;
 
-            System.out.println("WARNING: Kicker failed to init.");
-            System.out.println(err);
-        }
-
-        try {
-            this.intakePivot = INTAKE_PIVOT_ENABLED ? new IntakePivotSubsystem() : null;
-        } catch (Error err) {
-            this.intakePivot = null;
-
-            System.out.println("WARNING: IntakePivot failed to init.");
+            System.out.println("WARNING: IntakeSlide failed to init.");
             System.out.println(err);
         }
 
@@ -137,13 +104,22 @@ public class RobotContainer {
             System.out.println(err);
         }
 
-        this.operatorSubsystem = new OperatorSubsystem(climber, indexer, shooter, null, intakePivot, intake, kicker);
+        try {
+            this.conveyor = CONVEYOR_ENABLED ? new ConveyorSubsystem() : null;
+        } catch (Error err) {
+            this.conveyor = null;
+
+            System.out.println("WARNING: Conveyor failed to init.");
+            System.out.println(err);
+        }
+
+        this.operatorSubsystem = new OperatorSubsystem(indexer, shooter, intakeSlide, intake, conveyor);
 
         // Setup Inputs
-        this.driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
+        driverInput = new DriverInput(Constants.OperatorConstants.DRIVER_CONTROLLER_PORT, drivebase);
         driverInput.init(); // Configure our controller to send input to swervedrive
 
-        this.operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, operatorSubsystem);
+        operatorInput = new OperatorInput(Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT, operatorSubsystem);
         operatorInput.init(); // Configure our controller to send input to operator subsystems
 
         // Register Commands
@@ -151,27 +127,20 @@ public class RobotContainer {
                 drivebase.driveBackwards().withTimeout(1).withName("Auto.driveBackwards"));
         NamedCommands.registerCommand("driveForwards",
                 drivebase.driveForward().withTimeout(2).withName("Auto.driveForwards"));
-        // climber.setDefaultCommand(climber.climbUp());
-
-        // Aliance
-        // onAllianceChanged(getAlliance());
-        // new Trigger(() -> getAlliance() != currentAlliance)
-        // .onTrue(Commands.runOnce(() ->
-        // onAllianceChanged(getAlliance())).ignoringDisable(true));
 
         // Setup Auto
         autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
         autoChooser.addDefaultOption("Do Nothing", Commands.none());
         autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(3));
         autoChooser.addOption("Drive Backward", drivebase.driveBackwards().withTimeout(3));
-        autoChooser.addOption("Rotate 45", new RotateCommand(drivebase));
+        autoChooser.addOption("Rotate 90", new RotateCommand(drivebase));
 
+        RobotModeTriggers.disabled().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
+        RobotModeTriggers.teleop().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
         if (autoChooser.get() != null) {
             RobotModeTriggers.autonomous().onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
         }
 
-        int[] tags = { 16, 32 };
-        NamedCommands.registerCommand("climbDriveToTarget", new DriveToTarget(drivebase, tags));
         // NamedCommands.registerCommand("shoot", Commands.parallel(
         // shooter.forward().asProxy(),
         // (new WaitCommand(0.5).andThen(kicker::forward)).asProxy()
@@ -180,20 +149,20 @@ public class RobotContainer {
         // WaitCommand(3).andThen(indexer::stop).andThen(kicker::stop).andThen(shooter::stop))
         // ));
 
-        if (climber != null) {
-            NamedCommands.registerCommand("climb", climber.climbUp()
-                    .andThen(climber.climbDown().withTimeout(2)
-                    .andThen(climber.climbUp())));
-            NamedCommands.registerCommand("climbUp", climber.climbUp());
-            NamedCommands.registerCommand("climbDown", climber.climbDown());
+        if (intake != null && conveyor != null) {
+            NamedCommands.registerCommand("intake", Commands.parallel(
+                    intake.forward().asProxy(),
+                    conveyor.forward().asProxy()));
+
+            NamedCommands.registerCommand("outake", Commands.parallel(
+                    intake.reverse().asProxy(),
+                    conveyor.reverse().asProxy()));
         }
 
-        // NamedCommands.registerCommand("turretAngle0",
-        // turret.setAngle(Degrees.of(0)));
-        // NamedCommands.registerCommand("turretAngle45",
-        // turret.setAngle(Degrees.of(45)));
-        // NamedCommands.registerCommand("turretAngle90",
-        // turret.setAngle(Degrees.of(90)));
+        if (intakeSlide != null) {
+            NamedCommands.registerCommand("intakeSlideExtend", intakeSlide.extend());
+            NamedCommands.registerCommand("intakeSlideRetract", intakeSlide.retract());
+        }
     }
 
     public Command getAutonomousCommand() {
@@ -211,45 +180,4 @@ public class RobotContainer {
     public void setMotorBrake(boolean brake) {
         drivebase.setMotorBrake(brake);
     }
-
-    // Alliance
-    // private Alliance getAlliance() {
-    // return DriverStation.getAlliance().orElse(Alliance.Red);
-    // }
-
-    // private boolean isInAllianceZone() {
-    // Alliance alliance = getAlliance();
-    // Distance blueZone = Inches.of(182);
-    // Distance redZone = Inches.of(469);
-
-    // if (alliance == Alliance.Blue &&
-    // drivebase.getPose().getMeasureX().lt(blueZone)) {
-    // return true;
-    // } else if (alliance == Alliance.Red &&
-    // drivebase.getPose().getMeasureX().gt(redZone)) {
-    // return true;
-    // }
-
-    // return false;
-    // }
-
-    // private boolean isOnAllianceOutpostSide() {
-    // Alliance alliance = getAlliance();
-    // Distance midLine = Inches.of(158.84375);
-
-    // if (alliance == Alliance.Blue &&
-    // drivebase.getPose().getMeasureY().lt(midLine)) {
-    // return true;
-    // } else if (alliance == Alliance.Red &&
-    // drivebase.getPose().getMeasureY().gt(midLine)) {
-    // return true;
-    // }
-
-    // return false;
-    // }
-
-    // private void onAllianceChanged(Alliance alliance) {
-    // currentAlliance = alliance;
-    // System.out.println("Alliance changed to: " + alliance);
-    // }
 }

@@ -7,7 +7,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Radians;
 
 import com.pathplanner.lib.config.ModuleConfig;
@@ -21,8 +20,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Mass;
 import swervelib.math.Matter;
 
 /**
@@ -35,7 +32,7 @@ import swervelib.math.Matter;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(112.9);
+    public static final double ROBOT_MASS_KG = Units.lbsToKilograms(107.7);
     public static final Matter CHASSIS_MATTER = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)),
             ROBOT_MASS_KG);
     public static final double MAX_LINEAR_SPEED_MPS = Units.feetToMeters(14.5); // Robot maximum speed (m/s). Used to
@@ -43,12 +40,12 @@ public final class Constants {
     public static final double WHEEL_LOCK_TIME_SEC = 10; // Hold time on motor brakes when disabled (seconds)
     public static final double CONTROL_LOOP_PERIOD_SEC = 0.13; // s, 20ms + 110ms spark max velocity lag
     public static final double ROBOT_SQUARE_DIMENSIONS = Units.inchesToMeters(21.75);
+    public static final String CANIVORE_NAME = "CANivore 1";
 
     public static class Limelight {
         public static final boolean ENABLED = true;
         public static final Pose3d ROBOT_TO_CAMERA_POSE = new Pose3d(
-                Inches.of(0).in(Meters),.......
-                2
+                Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),
                 Inches.of(0).in(Meters),
                 new Rotation3d(0, Degrees.of(0).in(Radians), Degrees.of(0).in(Radians)));
@@ -60,9 +57,11 @@ public final class Constants {
                 new PIDConstants(2.0, 0.0, 0.3), // Translation PID constants
                 new PIDConstants(2.0, 0.0, 0.5) // Rotation PID constants
         );
+
+        public static final double ROBOT_MOI = ROBOT_MASS_KG * (ROBOT_SQUARE_DIMENSIONS * ROBOT_SQUARE_DIMENSIONS) / 6.0;
         public static final RobotConfig config = new RobotConfig(
                 ROBOT_MASS_KG,
-                5.0, // (1/12) * ROBOT_MASS_KG * (Math.pow(ROBOT_SQUARE_DIMENSIONS, 2) + Math.pow(ROBOT_SQUARE_DIMENSIONS, 2)), // Robot MOI 1/12 (kg*m^2)
+                ROBOT_MOI, // (1/12) * ROBOT_MASS_KG * (Math.pow(ROBOT_SQUARE_DIMENSIONS, 2) + Math.pow(ROBOT_SQUARE_DIMENSIONS, 2)), // Robot MOI 1/12 (kg*m^2)
                 new ModuleConfig(
                         0.0508,
                         4.473,
@@ -87,32 +86,32 @@ public final class Constants {
         public static final double TRANSLATION_SCALE = 0.8;
         // ignores values until they hit this threshold
         // makes robot less sensitive to joystick movement
-        public static final double JOYSTICK_DEADBAND = 0.1; // Joystick Deadband
-    }
-
-    public static class ClimberConstants {
-        public static final Distance STARTING_HEIGHT = Meters.of(0);
-        public static final Mass MASS = Pounds.of(16);
-        public static final int CLIMBER_MOTOR_CAN_ID = 8;
+        public static final double JOYSTICK_DEADBAND = 0.1;
     }
 
     public static class ShooterConstants {
-        public static final int SHOOTER_MOTOR_CAN_ID = 2; // make 2 for actual robot
-    }
-
-    public static class TurretConstants {
-        public static final int TURRET_MOTOR_CAN_ID = 3;
+        public static final int MOTOR_CAN_ID = 2;
     }
 
     public static class IndexerConstants {
-        public static final int INDEXER_MOTOR_CAN_ID = 6; 
+        public static final double INDEXER_SPEED = 0.8;
+        public static final int MOTOR_CAN_ID = 4;
+    }   
+
+    public static class IntakeSlideConstants {
+        public static final int OUTSIDE_LIMIT_SWITCH_DIO = 1;
+        public static final int INSIDE_LIMIT_SWITCH_DIO = 0;
+        public static final double SLIDE_SPEED = 0.15; // use 0.5
+        public static final int MOTOR_CAN_ID = 8;
     }
-    public static class IntakeConstants{
-        public static final int INTAKE_PIVOT_CAN_ID = 10;
-        public static final int INTAKE_CAN_ID = 11; // change later mabye
+
+    public static class IntakeConstants {
+        public static final double INTAKE_SPEED = 0.8;
+        public static final int MOTOR_CAN_ID = 11;
     }
-    public static class KickerConstants{
-        public static final int KICKER_CAN_ID = 4;
-        
+
+    public static class ConveyorConstants {
+        public static final double CONVEYOR_SPEED = 0.5;
+        public static final int MOTOR_CAN_ID = 6;
     }
 }

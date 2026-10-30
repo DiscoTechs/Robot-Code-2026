@@ -1,10 +1,7 @@
 package frc.robot.inputs;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import static edu.wpi.first.units.Units.Degrees;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -20,97 +17,66 @@ public class OperatorInput {
     }
 
     public void init() {
-        if (operator.indexer != null) {
+        if (operator.intake != null) {
             controller.leftTrigger()
-                    .whileTrue(operator.indexer.forward())
-                    .onFalse(operator.indexer.stop());
-
-            controller.rightTrigger()
-                    .whileTrue(operator.intakeAll())
-                    .onFalse(operator.indexer.stop());
-        }
-
-        if (operator.climber != null) {
-            controller.povUp()
-                    .whileTrue(operator.climber.climbDown())
-                    .onFalse(operator.climber.stop());
-            // climber up and down are inverted
-            controller.povDown()
-                    .whileTrue(operator.climber.climbUp())
-                    .onFalse(operator.climber.stop());
-        }
-
-        if (operator.turret != null) {
-            operator.turret.setDefaultCommand(new RunCommand(() -> {
-                double leftAxis = controller.getLeftX();
-                if (Math.abs(leftAxis) < 0.1) {
-                    operator.turret.set(0).execute();
-                } else {
-                    operator.turret.set(leftAxis * 0.5).execute();
-                }
-            }, operator.turret));
+                    .whileTrue(operator.intake.forward())
+                    .onFalse(operator.intake.stop());
+            controller.leftBumper()
+                    .whileTrue(operator.intake.reverse())
+                    .onFalse(operator.intake.stop());
         }
 
         if (operator.shooter != null) {
             operator.shooter.setDefaultCommand(new RunCommand(() -> {
                 double trig = controller.getRightTriggerAxis();
 
-                if (trig < 0.2) {
+                if (0 <= trig && trig < 0.20) {
                     Logger.recordOutput("ShooterSpeed", "0%");
                     operator.shooter.set(0).execute();
-                } else {
-                    if (0.2 <= trig && trig <= 0.5) {
-                        Logger.recordOutput("ShooterSpeed", "35%");
-                        operator.shooter.set(0.35).execute();
-                    } else if (0.5 <= trig && trig <= 0.75) {
-                        Logger.recordOutput("ShooterSpeed", "60%");
-                        operator.shooter.set(0.6).execute();
-                    } else if (0.76 <= trig && trig <= 1) {
-                        Logger.recordOutput("ShooterSpeed", "75%");
-                        operator.shooter.set(0.75).execute();
-                    }
+                } else if (0.20 <= trig && trig < 0.50) {
+                    Logger.recordOutput("ShooterSpeed", "35%");
+                    operator.shooter.set(-0.35).execute();
+                } else if (0.50 <= trig && trig < 0.75) {
+                    Logger.recordOutput("ShooterSpeed", "60%");
+                    operator.shooter.set(-0.6).execute();
+                } else if (0.75 <= trig && trig < 0.90) {
+                    Logger.recordOutput("ShooterSpeed", "75%");
+                    operator.shooter.set(-0.75).execute();
+                } else if (0.90 <= trig && trig < 1.0) {
+                    Logger.recordOutput("ShooterSpeed", "100%");
+                    operator.shooter.set(-1).execute();
                 }
             }, operator.shooter));
         }
 
-        // controller.leftTrigger().onTrue(Commands.runOnce(() ->
-        // operator.shooter.reverse()));
-        // controller.leftTrigger().onFalse(Commands.runOnce(() ->
-        // operator.shooter.stop()));
+        if (operator.intakeSlide != null) {
+            controller.povUp()
+                    .whileTrue(operator.intakeSlide.extend())
+                    .onFalse(operator.intakeSlide.stop());
 
-        // controller.rightTrigger().onFalse(operator.stopAll());
-
-        if (operator.kicker != null) {
-            controller.rightBumper().onTrue(operator.kicker.forward());
-            controller.leftBumper().onTrue(operator.kicker.stop());
+            controller.povDown()
+                    .whileTrue(operator.intakeSlide.retract())
+                    .onFalse(operator.intakeSlide.stop());
         }
 
-        if (operator.intakepivot != null) {
+        if (operator.conveyor != null) {
             controller.y()
-                    .whileTrue(operator.intakepivot.forward())
-                    .onFalse(operator.intakepivot.stop());
+                    .whileTrue(operator.conveyor.forward())
+                    .onFalse(operator.conveyor.stop());
+
+            controller.a()
+                    .whileTrue(operator.conveyor.reverse())
+                    .onFalse(operator.conveyor.stop());
+        }
+
+        if (operator.indexer != null) {
+            controller.b()
+                    .whileTrue(operator.indexer.index())
+                    .onFalse(operator.indexer.stop());
 
             controller.x()
-                    .whileTrue(operator.intakepivot.back())
-                    .onFalse(operator.intakepivot.stop());
-        }
-
-        if (operator.indexer != null && operator.intake != null) {
-            controller.a()
-                    .whileTrue(Commands.parallel(
-                            operator.indexer.forward().asProxy(),
-                            operator.intake.forward().asProxy()))
-                    .onFalse(Commands.parallel(
-                            operator.indexer.stop().asProxy(),
-                            operator.intake.stop().asProxy()));
-
-            controller.b()
-                    .whileTrue(Commands.parallel(
-                            operator.indexer.reverse().asProxy(),
-                            operator.intake.reverse().asProxy()))
-                    .onFalse(Commands.parallel(
-                            operator.indexer.stop().asProxy(),
-                            operator.intake.stop().asProxy()));
+                    .whileTrue(operator.indexer.outtake())
+                    .onFalse(operator.indexer.stop());
         }
     }
 }

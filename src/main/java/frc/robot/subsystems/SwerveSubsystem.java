@@ -2,6 +2,15 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+//back left: drive 26, angle 23, encoder 0, offset 291
+//old back left: drive 21, angle 17, encoder 0, offset 133
+//front left: drive 17, angle 12, encoder 2, offset 73
+//old front left: drive 28, angle 2, encoder 2, offset 21
+//back right: drive 25, angle 9, encoder 1, offset 264
+//old back right: drive 23, angle 9, encoder 1, offset 298
+//front right: drive 3, angle 2, encoder 0, offset 212
+//old front right: drive 9, angle 26, encoder 0, offset 165
+
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
@@ -20,9 +29,7 @@ import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
-import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
@@ -69,6 +76,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private Limelight limelight;
 
   private LimelightPoseEstimator poseEstimator;
+  private double speedMultiplier = 1.0;
   private double distanceToHub = 0.0;
   private Pose3d redHub = new Pose3d(
       Meter.of(11.902),
@@ -116,7 +124,8 @@ public class SwerveSubsystem extends SubsystemBase {
     // periodically when they are not moving.
 
     // swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used
-    // over the internal encoder and push the offset s onto it. Throws warning if not
+    // over the internal encoder and push the offset s onto it. Throws warning if
+    // not
     // possible
 
     // PathPlanner
@@ -140,11 +149,12 @@ public class SwerveSubsystem extends SubsystemBase {
       e.printStackTrace();
     }
 
-    // Preload PathPlanner Path finding IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
+    // Preload PathPlanner Path finding IF USING CUSTOM PATHFINDER ADD BEFORE THIS
+    // LINE
     CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
     if (Constants.Limelight.ENABLED) {
-      limelight = new Limelight("limelight-two");
+      limelight = new Limelight("limelight");
       limelight.getSettings()
           .withLimelightLEDMode(LEDMode.PipelineControl)
           .withCameraOffset(Constants.Limelight.ROBOT_TO_CAMERA_POSE)
@@ -375,14 +385,31 @@ public class SwerveSubsystem extends SubsystemBase {
    *                         smoother controls.
    * @return Drive command.
    */
-  public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY,
-      DoubleSupplier angularRotationX) {
+
+  /**
+   * Enable or disable half speed driving.
+   * - Brohan Tuffness
+   *
+   * @param enabled True = half speed, False = full speed
+   */
+  public void setHalfSpeed(boolean enabled) {
+    Logger.recordOutput("SwerveSpeedHalf", enabled);
+
+    if (enabled) {
+      speedMultiplier = 0.5;
+    } else {
+      speedMultiplier = 1.0;
+    }
+  }
+
+  public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX) {
     return run(() -> {
       // Make the robot move
       swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
-          translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(),
-          translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()), 0.8),
-          Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity(),
+          translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity() * speedMultiplier,
+          translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity() * speedMultiplier), 0.8),
+          Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity()
+              * speedMultiplier,
           true,
           false);
     });
@@ -404,6 +431,7 @@ public class SwerveSubsystem extends SubsystemBase {
       DoubleSupplier headingY) {
     // swerveDrive.setHeadingCorrection(true); // Normally you would want heading
     // correction for this kind of control.
+
     return run(() -> {
 
       Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(translationX.getAsDouble(),
